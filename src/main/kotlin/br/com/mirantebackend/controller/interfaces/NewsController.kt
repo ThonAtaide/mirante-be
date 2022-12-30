@@ -1,6 +1,6 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.controller.vo.PageDto
+import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.controller.vo.news.NewsRequestVo
 import br.com.mirantebackend.controller.vo.news.NewsResponseVo
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -14,7 +14,7 @@ interface NewsController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getNews(@RequestParam pageSize: Long, @RequestParam pageNumber: Long): PageDto
+    fun getNews(@RequestParam pageSize: Long, @RequestParam pageNumber: Long): PageDto<NewsResponseVo>
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{newsId}", produces = [MediaType.APPLICATION_JSON_VALUE])

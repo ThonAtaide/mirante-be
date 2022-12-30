@@ -9,5 +9,5 @@ data class TeamDocument(
     var name: String,
 
     @Field("score")
-    var score: Int
+    var score: Int? = null
 )

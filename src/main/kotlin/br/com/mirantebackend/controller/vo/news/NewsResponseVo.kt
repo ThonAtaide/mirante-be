@@ -1,6 +1,6 @@
 package br.com.mirantebackend.controller.vo.news
 
-import br.com.mirantebackend.controller.vo.SingleRecordDto
+import br.com.mirantebackend.dto.pageable.RecordDto
 import java.time.LocalDateTime
 
 data class NewsResponseVo(
@@ -10,4 +10,4 @@ data class NewsResponseVo(
     var createdAt: LocalDateTime,
     var updatedAt: LocalDateTime,
     var imagePath: String
-) : SingleRecordDto
+) : RecordDto

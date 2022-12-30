@@ -1,6 +1,6 @@
 package br.com.mirantebackend.controller
 
-import br.com.mirantebackend.controller.vo.PageDto
+import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.controller.vo.news.NewsRequestVo
 import br.com.mirantebackend.controller.vo.news.NewsResponseVo
 import br.com.mirantebackend.controller.interfaces.NewsController
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class NewsControllerImpl: NewsController {
 
-    override fun getNews(pageSize: Long, pageNumber: Long): PageDto {
+    override fun getNews(pageSize: Long, pageNumber: Long): PageDto<NewsResponseVo> {
         TODO("Not yet implemented")
     }
 

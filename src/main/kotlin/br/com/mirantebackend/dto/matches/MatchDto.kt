@@ -1,7 +1,6 @@
-package br.com.mirantebackend.services.dto.matches
+package br.com.mirantebackend.dto.matches
 
-import br.com.mirantebackend.controller.vo.SingleRecordDto
-import br.com.mirantebackend.services.dto.matches.TeamDto
+import br.com.mirantebackend.dto.pageable.RecordDto
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
@@ -12,10 +11,6 @@ data class MatchDto(
     @NotNull(message = "É preciso informar o campo.")
     @NotEmpty(message = "É preciso informar o campo.")
     var field: String,
-
-    @NotNull(message = "É preciso informar o campeonato.")
-    @NotEmpty(message = "É preciso informar o campeonato.")
-    var cup: String,
 
     @NotNull(message = "É preciso informar a data e horário do jogo.")
     @NotEmpty(message = "É preciso informar a data e horário do jogo.")
@@ -32,4 +27,4 @@ data class MatchDto(
     var updatedAt: LocalDateTime? = null,
 
     var matchEnded: Boolean = false,
-) : SingleRecordDto
+) : RecordDto
