@@ -1,7 +1,6 @@
 package br.com.mirantebackend.model
 
 import br.com.mirantebackend.annotations.NoArgsConstructor
-//import com.querydsl.core.annotations.QueryEntity
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.LastModifiedDate
@@ -9,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 
-//@QueryEntity
 @NoArgsConstructor
 @Document(collection = "coll_championship")
 data class ChampionshipDocument(
@@ -27,7 +25,7 @@ data class ChampionshipDocument(
     var season: String?,
 
     @Field("matches")
-    var matches: MutableList<MatchDocument> = mutableListOf(),
+    var matches: MutableList<MatchDocument>? = null,
 
     @Field("created_at")
     @CreatedDate

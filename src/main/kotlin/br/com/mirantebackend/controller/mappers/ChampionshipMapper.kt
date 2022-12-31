@@ -8,7 +8,7 @@ fun ChampionshipDto.toChampionshipDocument() = ChampionshipDocument(
     name,
     organizedBy,
     season,
-    matches = matches.map { it.toMatchDocument() }.toMutableList(),
+    matches = matches?.map { it.toMatchDocument() }?.toMutableList(),
     createdAt,
     updatedAt
 )
@@ -18,7 +18,7 @@ fun ChampionshipDocument.toChampionshipDto() = ChampionshipDto(
     name,
     organizedBy,
     season,
-    matches = matches.map { match -> match.toMatchDto() }.toMutableList(),
+    matches = matches?.map { match -> match.toMatchDto() }?.toMutableList(),
     createdAt,
     updatedAt
 )

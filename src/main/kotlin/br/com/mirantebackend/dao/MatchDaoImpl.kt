@@ -7,10 +7,18 @@ import br.com.mirantebackend.dao.interfaces.MatchDao
 import br.com.mirantebackend.dto.matches.MatchDto
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.MatchCreationException
+import br.com.mirantebackend.exceptions.MatchNotFoundException
+import br.com.mirantebackend.exceptions.MatchUpdateException
 import br.com.mirantebackend.model.ChampionshipDocument
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ID
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_MATCHES
 import br.com.mirantebackend.model.MatchDocument
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_CHALLENGER
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_FIELD
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_MATCH_ENDED
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_PLAYED_AT
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_PRINCIPAL
+import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_UPDATED_AT
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -42,9 +50,36 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
             .orElseThrow { MatchCreationException("Match does not throw error on creation but was not found") }
     }
 
-    override fun update(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto {
-        TODO("Not yet implemented")
-    }
+    override fun update(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto =
+        logger.info { "Updating match with id $matchId from $championshipId" }
+            .let {
+                Query(
+                    Criteria.where(FIELD_ID)
+                        .`is`(championshipId)
+                        .andOperator(
+                            Criteria.where(FIELD_MATCHES)
+                                .elemMatch(Criteria.where(MatchDocument.FIELD_ID).`is`(matchId))
+                        )
+                )
+            }.let { query ->
+                matchDto.id = matchId
+                matchDto.updatedAt = LocalDateTime.now(UTC)
+                val matchDocument = matchDto.toMatchDocument()
+                val update = Update()
+
+                update.set("$FIELD_MATCHES.$.$FIELD_FIELD", matchDocument.field)
+                update.set("$FIELD_MATCHES.$.$FIELD_PLAYED_AT", matchDocument.playedAt)
+                update.set("$FIELD_MATCHES.$.$FIELD_PRINCIPAL", matchDocument.principal)
+                update.set("$FIELD_MATCHES.$.$FIELD_CHALLENGER", matchDocument.challenger)
+                update.set("$FIELD_MATCHES.$.$FIELD_UPDATED_AT", matchDocument.updatedAt)
+                update.set("$FIELD_MATCHES.$.$FIELD_MATCH_ENDED", matchDocument.matchEnded)
+
+                return@let mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
+            }.let {
+                if (it.modifiedCount != 1L) throw MatchUpdateException(matchDto)
+                return@let findById(championshipId, matchId)
+                    .orElseThrow { MatchNotFoundException(matchId, championshipId) }
+            }
 
     override fun findById(championshipId: String, matchId: String): Optional<MatchDto> =
         logger.info { "Finding for matchDocument $matchId from championship $championshipId" }
@@ -60,7 +95,7 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                 return@let Optional.ofNullable(
                     mongoTemplate.aggregate(
                         newAggregation,
-                        "coll_championship",
+                        ChampionshipDocument::class.java,
                         MatchDocument::class.java
                     ).uniqueMappedResult
                 ).map { matchDocument -> matchDocument.toMatchDto() }

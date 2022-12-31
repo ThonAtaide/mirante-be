@@ -7,7 +7,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.noarg") version "1.7.21"
     kotlin("jvm") version "1.7.21"
     kotlin("plugin.spring") version "1.7.21"
-//    kotlin("kapt") version "1.4.10"
 }
 
 noArg {
@@ -22,9 +21,6 @@ repositories {
     mavenCentral()
 }
 
-
-
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -38,21 +34,10 @@ dependencies {
     implementation ("io.github.microutils:kotlin-logging-jvm:2.0.11")
     implementation ("ch.qos.logback:logback-classic:1.2.6")
 
-//    implementation("com.querydsl:querydsl-apt")
-//    implementation("com.querydsl:querydsl-mongodb:5.0.0"){
-//        exclude(group = "org.mongodb", module = "mongo-java-driver")
-//    }
-//    kapt("org.springframework.boot:spring-boot-configuration-processor")
-//    kapt("com.querydsl:querydsl-apt")
-
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
-
-//kapt {
-//    annotationProcessor("org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor")
-//}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
