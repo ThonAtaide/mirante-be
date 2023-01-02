@@ -16,13 +16,13 @@ data class ChampionshipDocument(
     var id: String? = null,
 
     @Field("name")
-    var name: String?,
+    var name: String,
 
     @Field("organized_by")
-    var organizedBy: String?,
+    var organizedBy: String,
 
     @Field("season")
-    var season: String?,
+    var season: String,
 
     @Field("matches")
     var matches: MutableList<MatchDocument>? = null,

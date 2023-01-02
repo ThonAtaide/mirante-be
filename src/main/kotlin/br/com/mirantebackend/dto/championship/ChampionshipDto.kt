@@ -13,13 +13,13 @@ data class ChampionshipDto(
 
     @NotNull(message = "É preciso informar o nome da competição.")
     @NotEmpty(message = "É preciso informar o nome da competição.")
-    var name: String?,
+    var name: String,
 
-    var organizedBy: String? = null,
+    var organizedBy: String,
 
     @NotNull(message = "É preciso informar a temporada.")
     @NotEmpty(message = "É preciso informar a temporada.")
-    var season: String? = null,
+    var season: String,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var matches: MutableList<MatchDto>? = null,

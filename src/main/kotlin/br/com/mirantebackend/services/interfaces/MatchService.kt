@@ -13,7 +13,8 @@ interface MatchService {
     fun findById(championshipId: String, matchId: String): MatchDto
 
     fun findAll(
-        championshipId: String,
+        championshipId: String? = null,
+        championshipName: String? = null,
         principal: String? = null,
         challenger: String? = null,
         cup: String? = null,

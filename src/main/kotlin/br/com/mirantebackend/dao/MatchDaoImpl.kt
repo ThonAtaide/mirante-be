@@ -12,6 +12,9 @@ import br.com.mirantebackend.exceptions.MatchUpdateException
 import br.com.mirantebackend.model.ChampionshipDocument
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ID
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_MATCHES
+import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_NAME
+import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
+import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_SEASON
 import br.com.mirantebackend.model.MatchDocument
 import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_CHALLENGER
 import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_FIELD
@@ -23,6 +26,8 @@ import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.Aggregation.limit
+import org.springframework.data.mongodb.core.aggregation.Aggregation.skip
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -31,6 +36,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
 class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), MatchDao {
@@ -65,16 +71,12 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                 matchDto.id = matchId
                 matchDto.updatedAt = LocalDateTime.now(UTC)
                 val matchDocument = matchDto.toMatchDocument()
-                val update = Update()
 
-                update.set("$FIELD_MATCHES.$.$FIELD_FIELD", matchDocument.field)
-                update.set("$FIELD_MATCHES.$.$FIELD_PLAYED_AT", matchDocument.playedAt)
-                update.set("$FIELD_MATCHES.$.$FIELD_PRINCIPAL", matchDocument.principal)
-                update.set("$FIELD_MATCHES.$.$FIELD_CHALLENGER", matchDocument.challenger)
-                update.set("$FIELD_MATCHES.$.$FIELD_UPDATED_AT", matchDocument.updatedAt)
-                update.set("$FIELD_MATCHES.$.$FIELD_MATCH_ENDED", matchDocument.matchEnded)
-
-                return@let mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
+                return@let mongoTemplate.updateFirst(
+                    query,
+                    buildMatchUpdate(matchDocument),
+                    ChampionshipDocument::class.java
+                )
             }.let {
                 if (it.modifiedCount != 1L) throw MatchUpdateException(matchDto)
                 return@let findById(championshipId, matchId)
@@ -103,23 +105,61 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
 
 
     override fun findAllMatchesFromChampionship(
+        championshipId: String?,
         championshipName: String?,
         season: String?,
         organizedBy: String?,
+        principal: String?,
+        challenger: String?,
+        field: String?,
+        played_at: String?,
+        match_ended: Boolean?,
         pageNumber: Int,
         pageSize: Int
     ): List<MatchDto> {
-        TODO("Not yet implemented")
-    }
+        return logger.info { "Finding all  matchs according to filters" }
+            .let {
+                val criteriaList = mutableListOf<Criteria>()
+                championshipId?.let { criteriaList.add(Criteria.where(FIELD_ID).`is`(it)) }
+                championshipName.let { criteriaList.add(Criteria.where(FIELD_NAME).regex("^${it}")) }
+                season.let { criteriaList.add(Criteria.where(FIELD_SEASON).regex("^${it}")) }
+                organizedBy.let { criteriaList.add(Criteria.where(FIELD_ORGANIZED_BY).regex("^${it}")) }
+                return@let criteriaList
+            }.let { criteriaList ->
+                val aggregationOperationList = mutableListOf<AggregationOperation>()
+                aggregationOperationList.add(Aggregation.match(Criteria().orOperator(criteriaList)))
+                return@let aggregationOperationList
+            }
+            .also { it.add(Aggregation.unwind(FIELD_MATCHES)) }
+//            .also {aggregationOperationList ->
+//                val criteriaList = mutableListOf<Criteria>()
+//                principal.let { criteriaList.add(Criteria.where("matches.principal.name").`is`(it)) }
+//                challenger.let { criteriaList.add(Criteria.where("matches.challenger.name").`is`(it)) }
+//                field.let { criteriaList.add(Criteria.where("matches.field").`is`(it)) }
+//                played_at.let { criteriaList.add(Criteria.where("played_at").`is`(it)) }
+//                match_ended.let { criteriaList.add(Criteria.where("played_at").`is`(it)) }
+//                if(criteriaList.isNotEmpty())
+//                    aggregationOperationList.add(Aggregation.match(Criteria().orOperator(criteriaList)))
+//            }
+            .also { it.add(Aggregation.project(FIELD_MATCHES).andExclude(FIELD_ID)) }
+            .also { it.add(Aggregation.replaceRoot(FIELD_MATCHES)) }
+            .also { it.add(skip(pageNumber.toLong() * pageSize)) }
+            .also { it.add(limit(pageSize.toLong())) }
+            .let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
+            .let { newAggregation ->
 
-    override fun findAllMatches(
-        championshipName: String?,
-        season: String?,
-        organizedBy: String?,
-        pageNumber: Int,
-        pageSize: Int
-    ): List<MatchDto> {
-        TODO("Not yet implemented")
+                return@let Optional.ofNullable(
+                    mongoTemplate.aggregate(
+                        newAggregation,
+                        ChampionshipDocument::class.java,
+                        MatchDocument::class.java
+                    ).mappedResults
+                ).map{ matchList -> matchList
+                    .stream()
+                    .map { it.toMatchDto() }
+                    .collect(Collectors.toList())
+                }.orElse(emptyList())
+            }
     }
 
     fun validateIfChampionshipExists(championshipId: String) {
@@ -138,4 +178,14 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                 update.push(FIELD_MATCHES, matchDto.toMatchDocument())
                 return@let mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
             }.let { if (it.matchedCount != 1L) throw MatchCreationException(matchDto) }
+
+    protected fun buildMatchUpdate(matchDocument: MatchDocument): Update =
+        Update().apply {
+            set("$FIELD_MATCHES.$.$FIELD_FIELD", matchDocument.field)
+            set("$FIELD_MATCHES.$.$FIELD_PLAYED_AT", matchDocument.playedAt)
+            set("$FIELD_MATCHES.$.$FIELD_PRINCIPAL", matchDocument.principal)
+            set("$FIELD_MATCHES.$.$FIELD_CHALLENGER", matchDocument.challenger)
+            set("$FIELD_MATCHES.$.$FIELD_UPDATED_AT", matchDocument.updatedAt)
+            set("$FIELD_MATCHES.$.$FIELD_MATCH_ENDED", matchDocument.matchEnded)
+        }
 }

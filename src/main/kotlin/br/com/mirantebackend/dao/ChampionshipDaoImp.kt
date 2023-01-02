@@ -14,6 +14,7 @@ import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ID
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_NAME
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_SEASON
+import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_UPDATED_AT
 import mu.KotlinLogging
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -22,6 +23,8 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.ZoneOffset.UTC
 import java.util.*
 import java.util.stream.Collectors
 
@@ -54,16 +57,15 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
                 .also { query -> query.addCriteria(Criteria.where(FIELD_ID).`is`(championshipId)) }
                 .let { query ->
                     val update = Update()
-                    championshipDto.name?.let { update.set(FIELD_NAME, it) }
-                    championshipDto.season?.let { update.set(FIELD_SEASON, it) }
-                    championshipDto.organizedBy?.let { update.set(FIELD_ORGANIZED_BY, it) }
-
-                    //TODO updated at não está sendo atualizado
+                    championshipDto.name.let { update.set(FIELD_NAME, it) }
+                    championshipDto.season.let { update.set(FIELD_SEASON, it) }
+                    championshipDto.organizedBy.let { update.set(FIELD_ORGANIZED_BY, it) }
+                    update.set(FIELD_UPDATED_AT, LocalDateTime.now(UTC))
 
                     val updateResult = mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
 
                     if (updateResult.matchedCount != 1L)
-                        throw ChampionshipUpdateException("The number of championships updated was bigger than expected ${updateResult.matchedCount}")
+                        throw ChampionshipUpdateException("The number of championships updated was different than expected ${updateResult.matchedCount}")
 
                     return@let this.findById(championshipId)
                         .orElseThrow { ChampionshipNotFoundException(championshipId) }
