@@ -37,8 +37,10 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
 
     override fun save(championshipDto: ChampionshipDto): ChampionshipDto {
         try {
-            logger.info { "Persisting championship document $championshipDto" }
-            return championshipDto.toChampionshipDocument()
+            logger.info { "Persisting new championship document $championshipDto" }
+            return championshipDto
+                .also { it.id = null }
+                .toChampionshipDocument()
                 .let { mongoTemplate.save(it) }
                 .toChampionshipDto()
         } catch (err: Exception) {
@@ -64,8 +66,10 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
 
                     val updateResult = mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
 
-                    if (updateResult.matchedCount != 1L)
-                        throw ChampionshipUpdateException("The number of championships updated was different than expected ${updateResult.matchedCount}")
+                    if (updateResult.matchedCount > 1L)
+                        throw ChampionshipUpdateException("The number of championships that matched with id $championshipId was ${updateResult.matchedCount}. However only the first document was updated.")
+                    else if (updateResult.matchedCount > 1L)
+                        throw ChampionshipUpdateException("No one championships matched with id $championshipId. So neither document was updated.")
 
                     return@let this.findById(championshipId)
                         .orElseThrow { ChampionshipNotFoundException(championshipId) }
@@ -97,9 +101,9 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
             .also { query -> query.with(PageRequest.of(pageNumber, pageSize)) }
             .also { query -> query.with(Sort.by(Sort.Direction.ASC, FIELD_CREATED_AT)) }
             .also { query ->
-                championshipName?.let { query.addCriteria(Criteria.where(FIELD_NAME).regex("^${championshipName}")) }
-                season?.let { query.addCriteria(Criteria.where(FIELD_SEASON).regex("^${season}")) }
-                organizedBy?.let { query.addCriteria(Criteria.where(FIELD_ORGANIZED_BY).regex("^${organizedBy}")) }
+                championshipName?.let { query.addCriteria(Criteria.where(FIELD_NAME).regex("^${championshipName}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
+                season?.let { query.addCriteria(Criteria.where(FIELD_SEASON).regex("^${season}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
+                organizedBy?.let { query.addCriteria(Criteria.where(FIELD_ORGANIZED_BY).regex("^${organizedBy}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
             }.let { query ->
                 mongoTemplate.find(query, ChampionshipDocument::class.java)
                     .stream()

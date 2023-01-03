@@ -6,39 +6,58 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDateTime
 
-@RequestMapping("/championship/{championship-id}/match")
+@RequestMapping("/")
 @Tag(name = "MatchController", description = "Gerenciamento de partidas relacionadas a determinado campeonato.")
 interface MatchController {
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping("championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun registerMatch(
         @PathVariable("championship-id") championshipId: String,
         @RequestBody match: MatchDto
     ): MatchDto
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updateMatch(
         @PathVariable("championship-id") championshipId: String,
-        @PathVariable("matchId") matchId: String, @RequestBody match: MatchDto
+        @PathVariable("matchId") matchId: String,
+        @RequestBody match: MatchDto
     ): MatchDto
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatch(
         @PathVariable("championship-id") championshipId: String,
         @PathVariable("matchId") matchId: String
     ): MatchDto
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("championship/{championship-id}/match",produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatches(
         @PathVariable("championship-id") championshipId: String,
-        @RequestParam pageNumber: Int = 0,
-        @RequestParam pageSize: Int = 10
+        @RequestParam(name = "principal") principal: String?,
+        @RequestParam(name = "challenger") challenger: String?,
+        @RequestParam(name = "field") field: String?,
+        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
+        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
+        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
+        @RequestParam(defaultValue = "0") pageNumber: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
     ): PageDto<MatchDto>
 
-
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("match",produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getMatches(
+        @RequestParam(name = "principal") principal: String?,
+        @RequestParam(name = "challenger") challenger: String?,
+        @RequestParam(name = "field") field: String?,
+        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
+        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
+        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
+        @RequestParam(defaultValue = "0") pageNumber: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): PageDto<MatchDto>
 }

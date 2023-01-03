@@ -7,6 +7,8 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @NoArgsConstructor
 @Document(collection = "coll_championship")
@@ -15,14 +17,18 @@ data class ChampionshipDocument(
     @Id
     var id: String? = null,
 
+    @field:NotNull(message = "É preciso informar o nome da competição.")
+    @field:NotEmpty(message = "É preciso informar o nome da competição.")
     @Field("name")
-    var name: String,
+    var name: String? = null,
 
     @Field("organized_by")
-    var organizedBy: String,
+    var organizedBy: String? = null,
 
+    @field:NotNull(message = "É preciso informar a temporada.")
+    @field:NotEmpty(message = "É preciso informar a temporada.")
     @Field("season")
-    var season: String,
+    var season: String? = null,
 
     @Field("matches")
     var matches: MutableList<MatchDocument>? = null,

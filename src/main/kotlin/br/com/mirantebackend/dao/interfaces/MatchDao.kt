@@ -11,7 +11,7 @@ interface MatchDao {
 
     fun findById(championshipId: String, matchId: String): Optional<MatchDto>
 
-    fun findAllMatchesFromChampionship(
+    fun findAll(
         championshipId: String? = null,
         championshipName: String? = null,
         season: String? = null,
@@ -19,8 +19,8 @@ interface MatchDao {
         principal: String? = null,
         challenger: String? = null,
         field: String? = null,
-        played_at: String? = null,
-        match_ended: Boolean? = null,
+        playedAt: String? = null,
+        matchEnded: Boolean? = null,
         pageNumber: Int,
         pageSize: Int
 

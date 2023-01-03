@@ -5,6 +5,7 @@ import br.com.mirantebackend.dto.matches.MatchDto
 import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 class MatchControllerImpl(
@@ -28,9 +29,43 @@ class MatchControllerImpl(
         matchService.findById(championshipId, matchId)
 
 
-    override fun getMatches(championshipId: String, pageNumber: Int, pageSize: Int): PageDto<MatchDto> {
+    override fun getMatches(
+        championshipId: String,
+        principal: String?,
+        challenger: String?,
+        field: String?,
+        playedAtAfter: LocalDateTime?,
+        playedAtBefore: LocalDateTime?,
+        matchEnded: Boolean?,
+        pageNumber: Int,
+        pageSize: Int
+    ): PageDto<MatchDto> {
         return matchService.findAll(
             championshipId = championshipId,
+            principal = principal,
+            challenger = challenger,
+            field = field,
+            matchEnded = matchEnded,
+            pageNumber = pageNumber,
+            pageSize = pageSize
+        )
+    }
+
+    override fun getMatches(
+        principal: String?,
+        challenger: String?,
+        field: String?,
+        playedAtAfter: LocalDateTime?,
+        playedAtBefore: LocalDateTime?,
+        matchEnded: Boolean?,
+        pageNumber: Int,
+        pageSize: Int
+    ): PageDto<MatchDto> {
+        return matchService.findAll(
+            principal = principal,
+            challenger = challenger,
+            field = field,
+            matchEnded = matchEnded,
             pageNumber = pageNumber,
             pageSize = pageSize
         )

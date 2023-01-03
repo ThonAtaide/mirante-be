@@ -8,18 +8,18 @@ import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 data class ChampionshipDto(
-    //TODO Testar remover a possibilidade de campos nulos em campos que não devem ser nulos
-    val id: String? = null,
 
-    @NotNull(message = "É preciso informar o nome da competição.")
-    @NotEmpty(message = "É preciso informar o nome da competição.")
-    var name: String,
+    var id: String? = null,
 
-    var organizedBy: String,
+    @field:NotNull(message = "É preciso informar o nome da competição.")
+    @field:NotEmpty(message = "É preciso informar o nome da competição.")
+    var name: String? = null,
 
-    @NotNull(message = "É preciso informar a temporada.")
-    @NotEmpty(message = "É preciso informar a temporada.")
-    var season: String,
+    var organizedBy: String? = null,
+
+    @field:NotNull(message = "É preciso informar a temporada.")
+    @field:NotEmpty(message = "É preciso informar a temporada.")
+    var season: String? = null,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var matches: MutableList<MatchDto>? = null,

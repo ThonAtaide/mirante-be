@@ -5,9 +5,9 @@ import javax.validation.constraints.NotNull
 
 data class TeamDto(
 
-    @NotNull(message = "É preciso informar o campo.")
-    @NotEmpty(message = "É preciso informar o campo.")
-    var name: String,
+    @field:NotNull(message = "É preciso informar o campo.")
+    @field:NotEmpty(message = "É preciso informar o campo.")
+    var name: String?,
 
     var score: Int? = null
 )
