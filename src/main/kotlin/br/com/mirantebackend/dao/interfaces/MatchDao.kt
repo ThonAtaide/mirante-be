@@ -1,6 +1,7 @@
 package br.com.mirantebackend.dao.interfaces
 
 import br.com.mirantebackend.dto.matches.MatchDto
+import br.com.mirantebackend.dto.pageable.PageDto
 import java.util.*
 
 interface MatchDao {
@@ -24,6 +25,6 @@ interface MatchDao {
         pageNumber: Int,
         pageSize: Int
 
-    ): List<MatchDto>
+    ): PageDto<MatchDto>
 
 }

@@ -12,5 +12,5 @@ interface NewsService {
 
     fun getNews(newsId: Long): NewsDto
 
-    fun getNews(pageSize: Long, pageNumber: Long): PageDto<NewsDto>
+    fun getNews(title: String? = null, pageSize: Long, pageNumber: Long): PageDto<NewsDto>
 }

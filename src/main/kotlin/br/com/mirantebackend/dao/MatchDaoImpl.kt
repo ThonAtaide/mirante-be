@@ -2,9 +2,11 @@ package br.com.mirantebackend.dao
 
 import br.com.mirantebackend.controller.mappers.toMatchDocument
 import br.com.mirantebackend.controller.mappers.toMatchDto
+import br.com.mirantebackend.dao.aggregationDto.pagination.MatchPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
 import br.com.mirantebackend.dto.matches.MatchDto
+import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.exceptions.MatchCreationException
 import br.com.mirantebackend.exceptions.MatchNotFoundException
 import br.com.mirantebackend.exceptions.MatchUpdateException
@@ -31,6 +33,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.Aggregation.limit
 import org.springframework.data.mongodb.core.aggregation.Aggregation.skip
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -118,8 +121,8 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): List<MatchDto> {
-        return logger.info { "Finding all  matchs according to filters" }
+    ): PageDto<MatchDto> {
+         return logger.info { "Finding all  matchs according to filters" }
             .let {
                 val criteriaList = mutableListOf<Criteria>()
                 championshipId?.let { criteriaList.add(Criteria.where(FIELD_ID).`is`(it)) }
@@ -128,7 +131,7 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                 organizedBy?.let { criteriaList.add(Criteria.where(FIELD_ORGANIZED_BY).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
                 return@let criteriaList
             }.let { criteriaList ->
-                val aggregationOperationList = mutableListOf<AggregationOperation>()
+                val aggregationOperationList = arrayListOf<AggregationOperation>()
                 if (criteriaList.isNotEmpty())
                     aggregationOperationList.add(Aggregation.match(Criteria().orOperator(criteriaList)))
                 return@let aggregationOperationList
@@ -146,23 +149,45 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
             }
             .also { it.add(Aggregation.sort(Sort.by(Sort.Direction.ASC, "$FIELD_MATCHES.$FIELD_PLAYED_AT"))) }
             .also { it.add(Aggregation.project(FIELD_ID, FIELD_NAME, FIELD_MATCHES)) }
-            .also { it.add(skip(pageNumber.toLong() * pageSize)) }
-            .also { it.add(limit(pageSize.toLong())) }
-            .let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
+            .also {
+                val facet = Aggregation.facet().and(skip(pageNumber.toLong() * pageSize), limit(pageSize.toLong())).`as`("data")
+                    .and(Aggregation.count().`as`("total")).`as`("Pagination")
+                it.add(facet)
+            }
+            .also {
+                val elementAt = ArrayOperators.ArrayElemAt.arrayOf("\$Pagination.total").elementAt(0)
+                it.add(Aggregation.addFields().addFieldWithValue("total", elementAt).build())
+            }
+            .also { it.add(Aggregation.project("total", "data")) }
+//            .also { it.add(Aggregation.project(FIELD_ID, FIELD_NAME, FIELD_MATCHES)) }
+//            .also { it.add(skip(pageNumber.toLong() * pageSize)) }
+//            .also { it.add(limit(pageSize.toLong())) }
+            .let { aggregationOperations ->
+
+                Aggregation.newAggregation(aggregationOperations)
+            }
             .let { newAggregation ->
 
                 return@let Optional.ofNullable(
                     mongoTemplate.aggregate(
                         newAggregation,
                         ChampionshipDocument::class.java,
-                        ChampionshipDto::class.java
-                    ).mappedResults
-                ).map { matchList ->
-                    matchList
-                        .stream()
-                        .map { it.let { it.matches.toMatchDto(it.id, it.name) } }
-                        .collect(Collectors.toList())
-                }.orElse(emptyList())
+                        MatchPaginatedAggregationResultDto::class.java
+                    ).uniqueMappedResult
+                ).map { result ->
+                    val data = Optional.ofNullable(result.data)
+                        .map {
+                            it.stream().map { championship ->
+                                championship.matches.toMatchDto(
+                                    championship.id,
+                                    championship.name
+                                )
+                            }.toList()
+                        }
+                        .orElse(emptyList())
+                    PageDto<MatchDto>(pageSize.toLong(), pageNumber, result.total, data)
+
+                }.orElse(PageDto<MatchDto>(pageSize.toLong(), pageNumber, 0, emptyList()))
             }
     }
 

@@ -62,7 +62,7 @@ class ChampionshipServiceImpl(
         logger.info { "Finding championships with the following parameters name: $name" }
         try {
             return championshipDao.findAll(championshipName = name, pageNumber = pageNumber, pageSize = pageSize)
-                .let { PageDto(it.size.toLong(), pageNumber, it) }
+                .let { PageDto(it.size.toLong(), pageNumber, 999, it) }
         } catch (err: Exception) {
             logger.error { err.message }
             throw err

@@ -69,20 +69,16 @@ class MatchServiceImpl(
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): PageDto<MatchDto> {
-        val matches = matchDao.findAll(
-            championshipId = championshipId,
-            championshipName = championshipName,
-            principal = principal,
-            challenger = challenger,
-            field = field,
-            matchEnded = matchEnded,
-            pageNumber = pageNumber,
-            pageSize = pageSize
-        )
-
-        return PageDto(matches.size.toLong(), pageNumber, matches)
-    }
+    ): PageDto<MatchDto> = matchDao.findAll(
+        championshipId = championshipId,
+        championshipName = championshipName,
+        principal = principal,
+        challenger = challenger,
+        field = field,
+        matchEnded = matchEnded,
+        pageNumber = pageNumber,
+        pageSize = pageSize
+    )
 
 
 }

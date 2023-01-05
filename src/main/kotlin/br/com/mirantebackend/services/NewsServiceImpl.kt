@@ -5,7 +5,9 @@ import br.com.mirantebackend.dto.news.NewsDto
 import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.NewsService
 import mu.KotlinLogging
+import org.springframework.stereotype.Service
 
+@Service
 class NewsServiceImpl(
     private val fileStorageServiceImpl: FileStorageServiceImpl
 ): NewsService {
@@ -26,7 +28,7 @@ class NewsServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getNews(pageSize: Long, pageNumber: Long): PageDto<NewsDto> {
+    override fun getNews(title: String?, pageSize: Long, pageNumber: Long): PageDto<NewsDto> {
         TODO("Not yet implemented")
     }
 }
