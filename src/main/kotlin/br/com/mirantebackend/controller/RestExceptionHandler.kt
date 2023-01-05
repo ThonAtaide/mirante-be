@@ -38,8 +38,23 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         ).let { ResponseEntity.badRequest().body(it) }
     }
 
+    @ExceptionHandler(value = [RuntimeException::class])
+    protected fun handleRuntimeException(
+        runtimeException: RuntimeException,
+        webRequest: WebRequest
+    ): ResponseEntity<Map<String, Any>> {
+        runtimeException.printStackTrace()
+        val errorMessage = runtimeException.message
+
+        return buildResponseError(
+            listOf(errorMessage),
+            runtimeException::class.qualifiedName.toString(),
+            HttpStatus.BAD_REQUEST.value()
+        ).let { ResponseEntity.badRequest().body(it) }
+    }
+
     protected fun buildResponseError(
-        errorMessages: Collection<String>,
+        errorMessages: Collection<String?>,
         throwable: String,
         statusCode: Int
     ): Map<String, Any> =

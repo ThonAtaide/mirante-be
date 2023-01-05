@@ -1,8 +1,8 @@
 package br.com.mirantebackend.controller.interfaces
 
+import br.com.mirantebackend.dto.news.NewsRequestDto
+import br.com.mirantebackend.dto.news.NewsDto
 import br.com.mirantebackend.dto.pageable.PageDto
-import br.com.mirantebackend.controller.vo.news.NewsRequestVo
-import br.com.mirantebackend.controller.vo.news.NewsResponseVo
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -14,17 +14,36 @@ interface NewsController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getNews(@RequestParam pageSize: Long, @RequestParam pageNumber: Long): PageDto<NewsResponseVo>
+    fun getNews(
+        @RequestParam(defaultValue = "10") pageSize: Long = 10,
+        @RequestParam(defaultValue = "0") pageNumber: Long = 0
+    ): PageDto<NewsDto>
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{newsId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getNews(@PathVariable("newsId") newsId: Long): NewsResponseVo
+    @GetMapping(
+        "/{newsId}",
+        produces = [MediaType.APPLICATION_JSON_VALUE]
+    )
+    fun getNews(@PathVariable("newsId") newsId: Long): NewsDto
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun createNews(@RequestBody news: NewsRequestVo)
+    @PostMapping(
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        consumes = [
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE
+        ]
+    )
+    fun createNews(@ModelAttribute("news") news: NewsRequestDto): NewsDto
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateNews(@RequestBody news: NewsRequestVo)
+    @PutMapping(
+        "/{newsId}",
+        produces = [MediaType.APPLICATION_JSON_VALUE],
+        consumes = [
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.MULTIPART_FORM_DATA_VALUE
+        ]
+    )
+    fun updateNews(@PathVariable("newsId") newsId: Long, @ModelAttribute("news") news: NewsRequestDto): NewsDto
 }
