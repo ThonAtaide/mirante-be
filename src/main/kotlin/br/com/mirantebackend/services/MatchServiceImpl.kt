@@ -78,7 +78,5 @@ class MatchServiceImpl(
         matchEnded = matchEnded,
         pageNumber = pageNumber,
         pageSize = pageSize
-    )
-
-
+    ).let { PageDto(it.pageable.pageSize, it.pageable.pageNumber, it.totalElements, it.content) }
 }

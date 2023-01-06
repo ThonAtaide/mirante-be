@@ -2,6 +2,8 @@ package br.com.mirantebackend.dao
 
 import br.com.mirantebackend.controller.mappers.toChampionshipDocument
 import br.com.mirantebackend.controller.mappers.toChampionshipDto
+import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto
+import br.com.mirantebackend.dao.aggregationDto.pagination.ChampionshipPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.ChampionshipDao
 import br.com.mirantebackend.dto.championship.ChampionshipDto
@@ -16,9 +18,14 @@ import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ORGANIZE
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_SEASON
 import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_UPDATED_AT
 import mu.KotlinLogging
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.Aggregation
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
@@ -26,7 +33,6 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 import java.util.*
-import java.util.stream.Collectors
 
 @Service
 class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), ChampionshipDao {
@@ -94,21 +100,88 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
         organizedBy: String?,
         pageNumber: Int,
         pageSize: Int
-    ): List<ChampionshipDto> {
+    ): Page<ChampionshipDto> {
         logger.info { "Fetching championship with - Page number: $pageNumber - Page size: $pageSize" }
-        return Query()
-            .also { query -> query.fields().exclude("matches") }
-            .also { query -> query.with(PageRequest.of(pageNumber, pageSize)) }
-            .also { query -> query.with(Sort.by(Sort.Direction.ASC, FIELD_CREATED_AT)) }
-            .also { query ->
-                championshipName?.let { query.addCriteria(Criteria.where(FIELD_NAME).regex("^${championshipName}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
-                season?.let { query.addCriteria(Criteria.where(FIELD_SEASON).regex("^${season}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
-                organizedBy?.let { query.addCriteria(Criteria.where(FIELD_ORGANIZED_BY).regex("^${organizedBy}", REGEX_OPTIONS_CASE_INSENSITIVE)) }
-            }.let { query ->
-                mongoTemplate.find(query, ChampionshipDocument::class.java)
-                    .stream()
-                    .map { it.toChampionshipDto() }
-                    .collect(Collectors.toList())
+        return mutableListOf<Criteria>()
+            .also { criteriaList ->
+                championshipName?.let {
+                    criteriaList.add(
+                        Criteria.where(FIELD_NAME).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
+                    )
+                }
+                season?.let {
+                    criteriaList.add(
+                        Criteria.where(FIELD_SEASON).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
+                    )
+                }
+                organizedBy?.let {
+                    criteriaList.add(
+                        Criteria.where(FIELD_ORGANIZED_BY).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
+                    )
+                }
+            }.let { criteriaList ->
+                val aggregationOperations = mutableListOf<AggregationOperation>()
+                if (criteriaList.isNotEmpty())
+                    aggregationOperations.add(Aggregation.match(Criteria().orOperator(criteriaList)))
+                return@let aggregationOperations
+            }.also { it.add(Aggregation.sort(Sort.by(Sort.Direction.ASC, FIELD_CREATED_AT))) }
+            .also {
+                it.add(
+                    Aggregation.project(
+                        FIELD_ID,
+                        FIELD_NAME,
+                        FIELD_SEASON,
+                        FIELD_ORGANIZED_BY,
+                        FIELD_CREATED_AT,
+                        FIELD_UPDATED_AT
+                    )
+                )
+            }
+            .also {
+                val facet = Aggregation.facet().and(
+                    Aggregation.skip(pageNumber.toLong() * pageSize),
+                    Aggregation.limit(pageSize.toLong())
+                ).`as`(AbstractPaginatedAggregationResultDto.FIELD_DATA)
+                    .and(Aggregation.count().`as`(AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL)).`as`(
+                        AbstractPaginatedAggregationResultDto.FIELD_PAGINATION
+                    )
+                it.add(facet)
+            }.also {
+                val elementAt =
+                    ArrayOperators.ArrayElemAt.arrayOf("\$${AbstractPaginatedAggregationResultDto.FIELD_PAGINATION}.${AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL}")
+                        .elementAt(0)
+                it.add(
+                    Aggregation.addFields()
+                        .addFieldWithValue(AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL, elementAt)
+                        .build()
+                )
+            }
+            .also {
+                it.add(
+                    Aggregation.project(
+                        AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL,
+                        AbstractPaginatedAggregationResultDto.FIELD_DATA
+                    )
+                )
+            }.let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
+            .let { newAggregation ->
+                return@let Optional.ofNullable(
+                    mongoTemplate.aggregate(
+                        newAggregation,
+                        ChampionshipDocument::class.java,
+                        ChampionshipPaginatedAggregationResultDto::class.java
+                    ).uniqueMappedResult
+                ).map { result ->
+                    val data = Optional.ofNullable(result.data)
+                        .map { it.stream().toList() }
+                        .orElse(emptyList())
+                    return@map PageImpl<ChampionshipDto>(
+                        data,
+                        PageRequest.of(pageNumber, pageSize),
+                        result.total
+                    )
+
+                }.orElse(PageImpl<ChampionshipDto>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
             }
     }
 }

@@ -1,6 +1,7 @@
 package br.com.mirantebackend.dao.interfaces
 
 import br.com.mirantebackend.dto.championship.ChampionshipDto
+import org.springframework.data.domain.Page
 import java.util.*
 
 interface ChampionshipDao {
@@ -18,5 +19,5 @@ interface ChampionshipDao {
         pageNumber: Int,
         pageSize: Int
 
-    ): List<ChampionshipDto>
+    ): Page<ChampionshipDto>
 }
