@@ -1,22 +1,19 @@
 package br.com.mirantebackend.dao
 
-import br.com.mirantebackend.controller.mappers.toChampionshipDocument
-import br.com.mirantebackend.controller.mappers.toChampionshipDto
 import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.aggregationDto.pagination.ChampionshipPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.ChampionshipDao
-import br.com.mirantebackend.dto.championship.ChampionshipDto
 import br.com.mirantebackend.exceptions.ChampionshipCreationException
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.ChampionshipUpdateException
-import br.com.mirantebackend.model.ChampionshipDocument
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_CREATED_AT
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ID
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_NAME
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_SEASON
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_UPDATED_AT
+import br.com.mirantebackend.model.documents.ChampionshipDocument
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_CREATED_AT
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ID
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_NAME
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_SEASON
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_UPDATED_AT
 import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -41,14 +38,11 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun save(championshipDto: ChampionshipDto): ChampionshipDto {
+    override fun save(championshipDocument: ChampionshipDocument): ChampionshipDocument {
         try {
-            logger.info { "Persisting new championship document $championshipDto" }
-            return championshipDto
-                .also { it.id = null }
-                .toChampionshipDocument()
+            logger.info { "Persisting new championship document $championshipDocument" }
+            return championshipDocument.copy(id = null)
                 .let { mongoTemplate.save(it) }
-                .toChampionshipDto()
         } catch (err: Exception) {
             logger.error { err.message }
             throw ChampionshipCreationException(err)
@@ -57,17 +51,17 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
 
     override fun updateNonNestedFields(
         championshipId: String,
-        championshipDto: ChampionshipDto
-    ): ChampionshipDto {
+        championshipDocument: ChampionshipDocument
+    ): ChampionshipDocument {
         try {
             logger.info { "Updating championship non nested fields from document $championshipId" }
             return Query()
                 .also { query -> query.addCriteria(Criteria.where(FIELD_ID).`is`(championshipId)) }
                 .let { query ->
                     val update = Update()
-                    championshipDto.name.let { update.set(FIELD_NAME, it) }
-                    championshipDto.season.let { update.set(FIELD_SEASON, it) }
-                    championshipDto.organizedBy.let { update.set(FIELD_ORGANIZED_BY, it) }
+                    championshipDocument.name.let { update.set(FIELD_NAME, it) }
+                    championshipDocument.season.let { update.set(FIELD_SEASON, it) }
+                    championshipDocument.organizedBy.let { update.set(FIELD_ORGANIZED_BY, it) }
                     update.set(FIELD_UPDATED_AT, LocalDateTime.now(UTC))
 
                     val updateResult = mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
@@ -86,12 +80,12 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
         }
     }
 
-    override fun findById(championshipId: String): Optional<ChampionshipDto> =
+    override fun findById(championshipId: String): Optional<ChampionshipDocument> =
         logger.info { "Fetching championship with id: $championshipId" }
             .let {
                 Optional.ofNullable(
                     mongoTemplate.findById(championshipId, ChampionshipDocument::class.java)
-                ).map { it.toChampionshipDto() }
+                )
             }
 
     override fun findAll(
@@ -100,7 +94,7 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
         organizedBy: String?,
         pageNumber: Int,
         pageSize: Int
-    ): Page<ChampionshipDto> {
+    ): Page<ChampionshipDocument> {
         logger.info { "Fetching championship with - Page number: $pageNumber - Page size: $pageSize" }
         return mutableListOf<Criteria>()
             .also { criteriaList ->
@@ -175,13 +169,13 @@ class ChampionshipDaoImp(mongoTemplate: MongoTemplate) : AbstractDao(mongoTempla
                     val data = Optional.ofNullable(result.data)
                         .map { it.stream().toList() }
                         .orElse(emptyList())
-                    return@map PageImpl<ChampionshipDto>(
+                    return@map PageImpl<ChampionshipDocument>(
                         data,
                         PageRequest.of(pageNumber, pageSize),
                         result.total
                     )
 
-                }.orElse(PageImpl<ChampionshipDto>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
+                }.orElse(PageImpl<ChampionshipDocument>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
             }
     }
 }

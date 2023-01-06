@@ -1,7 +1,7 @@
 package br.com.mirantebackend.services.interfaces
 
-import br.com.mirantebackend.dto.matches.MatchDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import org.springframework.validation.annotation.Validated
 import java.time.LocalDateTime
 import javax.validation.Valid

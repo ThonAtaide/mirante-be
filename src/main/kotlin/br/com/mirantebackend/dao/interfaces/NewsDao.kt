@@ -1,7 +1,7 @@
 package br.com.mirantebackend.dao.interfaces
 
-import br.com.mirantebackend.dto.news.NewsDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.news.NewsDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 
 interface NewsDao {
 

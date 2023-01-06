@@ -1,7 +1,5 @@
 package br.com.mirantebackend.dao
 
-import br.com.mirantebackend.controller.mappers.toMatchDocument
-import br.com.mirantebackend.controller.mappers.toMatchDto
 import br.com.mirantebackend.dao.aggregationDto.ChampionshipReducedDto
 import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto.Companion.FIELD_DATA
 import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto.Companion.FIELD_PAGINATION
@@ -9,25 +7,24 @@ import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggr
 import br.com.mirantebackend.dao.aggregationDto.pagination.MatchPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
-import br.com.mirantebackend.dto.matches.MatchDto
 import br.com.mirantebackend.exceptions.MatchCreationException
 import br.com.mirantebackend.exceptions.MatchNotFoundException
 import br.com.mirantebackend.exceptions.MatchUpdateException
-import br.com.mirantebackend.model.ChampionshipDocument
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ID
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_MATCHES
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_NAME
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
-import br.com.mirantebackend.model.ChampionshipDocument.Companion.FIELD_SEASON
-import br.com.mirantebackend.model.MatchDocument
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_CHALLENGER
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_CHALLENGER_NAME
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_FIELD
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_MATCH_ENDED
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_PLAYED_AT
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_PRINCIPAL
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_PRINCIPAL_NAME
-import br.com.mirantebackend.model.MatchDocument.Companion.FIELD_UPDATED_AT
+import br.com.mirantebackend.model.documents.ChampionshipDocument
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ID
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_MATCHES
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_NAME
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
+import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_SEASON
+import br.com.mirantebackend.model.documents.MatchDocument
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_CHALLENGER
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_CHALLENGER_NAME
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_FIELD
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_MATCH_ENDED
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PLAYED_AT
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PRINCIPAL
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PRINCIPAL_NAME
+import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_UPDATED_AT
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
@@ -57,17 +54,17 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun save(championshipId: String, matchDto: MatchDto): MatchDto {
+    override fun save(championshipId: String, matchDocument: MatchDocument): MatchDocument {
         logger.info { "Creating new match into championship $championshipId" }
 
         val objectId = ObjectId()
-        pushNewMatchDocument(championshipId, objectId, matchDto)
+        pushNewMatchDocument(championshipId, objectId, matchDocument)
 
         return this.findById(championshipId, objectId.toString())
             .orElseThrow { MatchCreationException("Match does not throw error on creation but was not found") }
     }
 
-    override fun update(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto =
+    override fun update(championshipId: String, matchId: String, matchDocument: MatchDocument): MatchDocument =
         logger.info { "Updating match with id $matchId from $championshipId" }
             .let {
                 Query(
@@ -79,22 +76,19 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                         )
                 )
             }.let { query ->
-                matchDto.id = matchId
-                matchDto.updatedAt = LocalDateTime.now(UTC)
-                val matchDocument = matchDto.toMatchDocument()
 
                 return@let mongoTemplate.updateFirst(
                     query,
-                    buildMatchUpdate(matchDocument),
+                    buildMatchUpdate(matchDocument.copy(id = matchId, updatedAt = LocalDateTime.now(UTC))),
                     ChampionshipDocument::class.java
                 )
             }.let {
-                if (it.modifiedCount != 1L) throw MatchUpdateException(matchDto)
+                if (it.modifiedCount != 1L) throw MatchUpdateException(matchDocument)
                 return@let findById(championshipId, matchId)
                     .orElseThrow { MatchNotFoundException(matchId, championshipId) }
             }
 
-    override fun findById(championshipId: String, matchId: String): Optional<MatchDto> =
+    override fun findById(championshipId: String, matchId: String): Optional<MatchDocument> =
         logger.info { "Finding for matchDocument $matchId from championship $championshipId" }
             .let { mutableListOf<AggregationOperation>() }
             .also { it.add(Aggregation.match(Criteria.where(FIELD_ID).`is`(championshipId))) }
@@ -117,7 +111,14 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                         ChampionshipReducedDto::class.java
                     ).uniqueMappedResult
                 ).map { championshipDto ->
-                    championshipDto.let { it.matches.toMatchDto(it.id, it.name) }
+                    championshipDto.let {
+                        it.matches.copy(
+                            championship = MatchDocument.ChampionshipInfo(
+                                it.id,
+                                it.name
+                            )
+                        )
+                    }
                 }
             }
 
@@ -133,7 +134,7 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): Page<MatchDto> {
+    ): Page<MatchDocument> {
         return logger.info { "Finding all  matchs according to filters" }
             .let {
                 val criteriaList = mutableListOf<Criteria>()
@@ -217,28 +218,31 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
                     val data = Optional.ofNullable(result.data)
                         .map {
                             it.stream().map { championship ->
-                                championship.matches.toMatchDto(
-                                    championship.id,
-                                    championship.name
+                                championship.matches.copy(
+                                    championship = MatchDocument.ChampionshipInfo(
+                                        championship.id,
+                                        championship.name
+                                    )
                                 )
                             }.toList()
                         }
                         .orElse(emptyList())
-                    PageImpl<MatchDto>(data, PageRequest.of(pageNumber, pageSize), result.total)
+                    PageImpl<MatchDocument>(data, PageRequest.of(pageNumber, pageSize), result.total)
 
-                }.orElse(PageImpl<MatchDto>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
+                }.orElse(PageImpl<MatchDocument>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
             }
     }
 
-    fun pushNewMatchDocument(championshipId: String, matchObjectId: ObjectId, matchDto: MatchDto): Unit =
+    fun pushNewMatchDocument(championshipId: String, matchObjectId: ObjectId, matchDocument: MatchDocument): Unit =
         logger.info { "Pushing new match document with object id $matchObjectId" }
             .let { Query() }
             .also { it.addCriteria(Criteria.where(FIELD_ID).`is`(championshipId)) }
             .let { query ->
-                matchDto.id = matchObjectId.toString()
-                matchDto.createdAt = LocalDateTime.now(UTC)
                 val update = Update()
-                update.push(FIELD_MATCHES, matchDto.toMatchDocument())
+                update.push(
+                    FIELD_MATCHES,
+                    matchDocument.copy(id = matchObjectId.toString(), createdAt = LocalDateTime.now(UTC))
+                )
                 return@let mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
             }.let {
                 if (it.matchedCount == 0L) throw MatchCreationException("Championship $championshipId does not exist and the match could not be created.")

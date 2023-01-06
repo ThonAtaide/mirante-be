@@ -1,7 +1,7 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.dto.matches.MatchDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType

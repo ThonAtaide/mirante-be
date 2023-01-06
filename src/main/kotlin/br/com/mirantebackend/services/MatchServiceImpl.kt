@@ -1,13 +1,15 @@
 package br.com.mirantebackend.services
 
+import br.com.mirantebackend.controller.mappers.toMatchDocument
+import br.com.mirantebackend.controller.mappers.toMatchDto
 import br.com.mirantebackend.dao.interfaces.ChampionshipDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
-import br.com.mirantebackend.dto.matches.MatchDto
-import br.com.mirantebackend.dto.pageable.PageDto
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.MatchCreationException
 import br.com.mirantebackend.exceptions.MatchNotFoundException
 import br.com.mirantebackend.exceptions.MatchUpdateException
+import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -28,8 +30,9 @@ class MatchServiceImpl(
         logger.info { "Creating new match $matchDto on championship $championshipId" }
         try {
             return championshipDao.findById(championshipId)
-                .map { matchDao.save(championshipId, matchDto) }
+                .map { matchDao.save(championshipId, matchDto.toMatchDocument()) }
                 .orElseThrow { ChampionshipNotFoundException(championshipId) }
+                .toMatchDto()
         } catch (err: ChampionshipNotFoundException) {
             logger.error { err.message }
             throw err
@@ -43,8 +46,9 @@ class MatchServiceImpl(
         logger.info { "Updating match $matchDto on championship $championshipId" }
         try {
             return matchDao.findById(championshipId, matchId)
-                .map { matchDao.update(championshipId, matchId, matchDto) }
+                .map { matchDao.update(championshipId, matchId, matchDto.toMatchDocument()) }
                 .orElseThrow { MatchNotFoundException(matchId, championshipId) }
+                .toMatchDto()
         } catch (err: MatchNotFoundException) {
             logger.error { err.message }
             throw err
@@ -57,6 +61,7 @@ class MatchServiceImpl(
     override fun findById(championshipId: String, matchId: String): MatchDto =
         matchDao.findById(championshipId, matchId)
             .orElseThrow { MatchNotFoundException(matchId, championshipId) }
+            .toMatchDto()
 
     override fun findAll(
         championshipId: String?,
@@ -78,5 +83,6 @@ class MatchServiceImpl(
         matchEnded = matchEnded,
         pageNumber = pageNumber,
         pageSize = pageSize
-    ).let { PageDto(it.pageable.pageSize, it.pageable.pageNumber, it.totalElements, it.content) }
+    ).map { it.toMatchDto() }
+        .let { PageDto(it.pageable.pageSize, it.pageable.pageNumber, it.totalElements, it.content) }
 }

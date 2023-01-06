@@ -1,4 +1,4 @@
-package br.com.mirantebackend.model
+package br.com.mirantebackend.model.documents
 
 import br.com.mirantebackend.annotations.NoArgsConstructor
 import org.springframework.data.mongodb.core.mapping.Field
@@ -36,13 +36,22 @@ data class MatchDocument(
 
     @Field("match_ended")
     var matchEnded: Boolean = false,
+
+    @kotlin.jvm.Transient
+    var championship: ChampionshipInfo? = null
+
 ) {
+    data class ChampionshipInfo(
+        var id: String?,
+        var name: String?
+    )
+
     companion object {
         const val FIELD_ID = "_id"
         const val FIELD_FIELD = "field"
         const val FIELD_PLAYED_AT = "played_at"
-        const val FIELD_PRINCIPAL= "principal"
-        const val FIELD_PRINCIPAL_NAME= "principal.name"
+        const val FIELD_PRINCIPAL = "principal"
+        const val FIELD_PRINCIPAL_NAME = "principal.name"
         const val FIELD_CHALLENGER = "challenger"
         const val FIELD_CHALLENGER_NAME = "challenger.name"
         const val FIELD_UPDATED_AT = "updated_at"

@@ -1,7 +1,7 @@
 package br.com.mirantebackend.services.interfaces
 
-import br.com.mirantebackend.dto.championship.ChampionshipDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.championship.ChampionshipDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import org.springframework.validation.annotation.Validated
 import javax.validation.Valid
 

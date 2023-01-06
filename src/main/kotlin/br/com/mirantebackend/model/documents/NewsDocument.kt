@@ -1,4 +1,4 @@
-package br.com.mirantebackend.model
+package br.com.mirantebackend.model.documents
 
 import br.com.mirantebackend.annotations.NoArgsConstructor
 import org.springframework.data.annotation.Id

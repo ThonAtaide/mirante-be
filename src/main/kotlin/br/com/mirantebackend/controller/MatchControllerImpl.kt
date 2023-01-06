@@ -1,8 +1,8 @@
 package br.com.mirantebackend.controller
 
 import br.com.mirantebackend.controller.interfaces.MatchController
-import br.com.mirantebackend.dto.matches.MatchDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime

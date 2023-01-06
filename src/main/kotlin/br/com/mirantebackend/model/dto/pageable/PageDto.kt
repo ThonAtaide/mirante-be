@@ -1,4 +1,4 @@
-package br.com.mirantebackend.dto.pageable
+package br.com.mirantebackend.model.dto.pageable
 
 class PageDto<T : RecordDto>(
     var pageSize: Int,

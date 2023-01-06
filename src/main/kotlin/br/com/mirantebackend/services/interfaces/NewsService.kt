@@ -1,8 +1,8 @@
 package br.com.mirantebackend.services.interfaces
 
-import br.com.mirantebackend.dto.news.NewsDto
-import br.com.mirantebackend.dto.news.NewsRequestDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.news.NewsDto
+import br.com.mirantebackend.model.dto.news.NewsRequestDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 
 interface NewsService {
 

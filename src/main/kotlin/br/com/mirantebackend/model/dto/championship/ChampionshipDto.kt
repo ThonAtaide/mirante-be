@@ -1,7 +1,7 @@
-package br.com.mirantebackend.dto.championship
+package br.com.mirantebackend.model.dto.championship
 
-import br.com.mirantebackend.dto.matches.MatchDto
-import br.com.mirantebackend.dto.pageable.RecordDto
+import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.model.dto.pageable.RecordDto
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty

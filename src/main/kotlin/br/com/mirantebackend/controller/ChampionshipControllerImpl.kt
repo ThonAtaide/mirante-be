@@ -1,8 +1,8 @@
 package br.com.mirantebackend.controller
 
 import br.com.mirantebackend.controller.interfaces.ChampionshipController
-import br.com.mirantebackend.dto.championship.ChampionshipDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.championship.ChampionshipDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.ChampionshipService
 import org.springframework.web.bind.annotation.RestController
 

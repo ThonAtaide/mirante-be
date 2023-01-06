@@ -1,4 +1,4 @@
-package br.com.mirantebackend.dto.news
+package br.com.mirantebackend.model.dto.news
 
 import org.springframework.web.multipart.MultipartFile
 

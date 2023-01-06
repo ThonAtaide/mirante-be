@@ -1,4 +1,4 @@
-package br.com.mirantebackend.dto.matches
+package br.com.mirantebackend.model.dto.matches
 
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull

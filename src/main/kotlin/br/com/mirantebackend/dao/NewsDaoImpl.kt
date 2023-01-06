@@ -2,8 +2,8 @@ package br.com.mirantebackend.dao
 
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.NewsDao
-import br.com.mirantebackend.dto.news.NewsDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.news.NewsDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import mu.KotlinLogging
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Service

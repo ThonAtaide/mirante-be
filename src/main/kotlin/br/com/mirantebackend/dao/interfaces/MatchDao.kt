@@ -1,16 +1,16 @@
 package br.com.mirantebackend.dao.interfaces
 
-import br.com.mirantebackend.dto.matches.MatchDto
+import br.com.mirantebackend.model.documents.MatchDocument
 import org.springframework.data.domain.Page
 import java.util.*
 
 interface MatchDao {
 
-    fun save(championshipId: String, matchDto: MatchDto): MatchDto
+    fun save(championshipId: String, matchDocument: MatchDocument): MatchDocument
 
-    fun update(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto
+    fun update(championshipId: String, matchId: String, matchDocument: MatchDocument): MatchDocument
 
-    fun findById(championshipId: String, matchId: String): Optional<MatchDto>
+    fun findById(championshipId: String, matchId: String): Optional<MatchDocument>
 
     fun findAll(
         championshipId: String? = null,
@@ -25,6 +25,6 @@ interface MatchDao {
         pageNumber: Int,
         pageSize: Int
 
-    ): Page<MatchDto>
+    ): Page<MatchDocument>
 
 }

@@ -1,23 +1,23 @@
 package br.com.mirantebackend.dao.interfaces
 
-import br.com.mirantebackend.dto.championship.ChampionshipDto
+import br.com.mirantebackend.model.documents.ChampionshipDocument
 import org.springframework.data.domain.Page
 import java.util.*
 
 interface ChampionshipDao {
 
-    fun save(championshipDto: ChampionshipDto): ChampionshipDto
+    fun save(championshipDocument: ChampionshipDocument): ChampionshipDocument
 
-    fun updateNonNestedFields(championshipId: String, championshipDto: ChampionshipDto): ChampionshipDto
+    fun updateNonNestedFields(championshipId: String, championshipDocument: ChampionshipDocument): ChampionshipDocument
 
-    fun findById(championshipId: String): Optional<ChampionshipDto>
+    fun findById(championshipId: String): Optional<ChampionshipDocument>
 
     fun findAll(
-        championshipName: String?  = null,
+        championshipName: String? = null,
         season: String? = null,
         organizedBy: String? = null,
         pageNumber: Int,
         pageSize: Int
 
-    ): Page<ChampionshipDto>
+    ): Page<ChampionshipDocument>
 }

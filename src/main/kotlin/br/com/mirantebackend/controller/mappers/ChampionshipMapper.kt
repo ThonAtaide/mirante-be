@@ -1,7 +1,7 @@
 package br.com.mirantebackend.controller.mappers
 
-import br.com.mirantebackend.dto.championship.ChampionshipDto
-import br.com.mirantebackend.model.ChampionshipDocument
+import br.com.mirantebackend.model.dto.championship.ChampionshipDto
+import br.com.mirantebackend.model.documents.ChampionshipDocument
 
 fun ChampionshipDto.toChampionshipDocument() = ChampionshipDocument(
     id,

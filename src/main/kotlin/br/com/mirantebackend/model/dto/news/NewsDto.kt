@@ -1,6 +1,6 @@
-package br.com.mirantebackend.dto.news
+package br.com.mirantebackend.model.dto.news
 
-import br.com.mirantebackend.dto.pageable.RecordDto
+import br.com.mirantebackend.model.dto.pageable.RecordDto
 import java.time.LocalDateTime
 
 data class NewsDto(

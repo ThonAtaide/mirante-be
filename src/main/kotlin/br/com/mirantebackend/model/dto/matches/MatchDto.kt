@@ -1,6 +1,6 @@
-package br.com.mirantebackend.dto.matches
+package br.com.mirantebackend.model.dto.matches
 
-import br.com.mirantebackend.dto.pageable.RecordDto
+import br.com.mirantebackend.model.dto.pageable.RecordDto
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
@@ -25,14 +25,14 @@ data class MatchDto(
     var matchEnded: Boolean = false,
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    var championship: ChampionshipDtoReduced? = null,
+    var championship: ChampionshipInfoDto? = null,
 
     var createdAt: LocalDateTime? = null,
 
     var updatedAt: LocalDateTime? = null
 
 ) : RecordDto {
-    data class ChampionshipDtoReduced(
+    data class ChampionshipInfoDto(
         var id: String? = null,
         var name: String? = null,
     )

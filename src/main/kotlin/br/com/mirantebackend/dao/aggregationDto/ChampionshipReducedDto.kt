@@ -1,6 +1,6 @@
 package br.com.mirantebackend.dao.aggregationDto
 
-import br.com.mirantebackend.model.MatchDocument
+import br.com.mirantebackend.model.documents.MatchDocument
 
 data class ChampionshipReducedDto(
     var id: String? = null,

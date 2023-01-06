@@ -1,9 +1,9 @@
 package br.com.mirantebackend.controller
 
 import br.com.mirantebackend.controller.interfaces.NewsController
-import br.com.mirantebackend.dto.news.NewsDto
-import br.com.mirantebackend.dto.news.NewsRequestDto
-import br.com.mirantebackend.dto.pageable.PageDto
+import br.com.mirantebackend.model.dto.news.NewsDto
+import br.com.mirantebackend.model.dto.news.NewsRequestDto
+import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.NewsService
 import org.springframework.web.bind.annotation.RestController
 
