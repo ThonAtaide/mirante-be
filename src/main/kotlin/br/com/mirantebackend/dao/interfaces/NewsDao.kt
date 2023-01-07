@@ -1,15 +1,16 @@
 package br.com.mirantebackend.dao.interfaces
 
-import br.com.mirantebackend.model.dto.news.NewsDto
-import br.com.mirantebackend.model.dto.pageable.PageDto
+import br.com.mirantebackend.model.documents.NewsDocument
+import org.springframework.data.domain.Page
+import java.util.*
 
 interface NewsDao {
 
-    fun createNews(newsDto: NewsDto): NewsDto
+    fun createNews(newsDocument: NewsDocument): NewsDocument
 
-    fun updateNews(newsId: Long, newsDto: NewsDto): NewsDto
+    fun updateNews(newsId: String, newsDocument: NewsDocument): NewsDocument
 
-    fun findById(newsId: Long): NewsDto
+    fun findById(newsId: String): Optional<NewsDocument>
 
-    fun findAll(title: String, pageNumber: Int, pageSize: Int): PageDto<NewsDto>
+    fun findAll(pageNumber: Int, pageSize: Int): Page<NewsDocument>
 }

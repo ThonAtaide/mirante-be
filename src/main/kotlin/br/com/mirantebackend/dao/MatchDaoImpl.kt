@@ -1,126 +1,36 @@
 package br.com.mirantebackend.dao
 
-import br.com.mirantebackend.dao.aggregationDto.ChampionshipReducedDto
-import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto.Companion.FIELD_DATA
-import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto.Companion.FIELD_PAGINATION
-import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto.Companion.FIELD_PAGINATION_TOTAL
-import br.com.mirantebackend.dao.aggregationDto.pagination.MatchPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
-import br.com.mirantebackend.exceptions.MatchCreationException
-import br.com.mirantebackend.exceptions.MatchNotFoundException
-import br.com.mirantebackend.exceptions.MatchUpdateException
-import br.com.mirantebackend.model.documents.ChampionshipDocument
-import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ID
-import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_MATCHES
-import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_NAME
-import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_ORGANIZED_BY
-import br.com.mirantebackend.model.documents.ChampionshipDocument.Companion.FIELD_SEASON
+import br.com.mirantebackend.dao.usecases.interfaces.match.CreateMatchUseCase
+import br.com.mirantebackend.dao.usecases.interfaces.match.FindMatchUseCase
+import br.com.mirantebackend.dao.usecases.interfaces.match.UpdateMatchUseCase
 import br.com.mirantebackend.model.documents.MatchDocument
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_CHALLENGER
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_CHALLENGER_NAME
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_FIELD
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_MATCH_ENDED
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PLAYED_AT
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PRINCIPAL
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_PRINCIPAL_NAME
-import br.com.mirantebackend.model.documents.MatchDocument.Companion.FIELD_UPDATED_AT
-import mu.KotlinLogging
-import org.bson.types.ObjectId
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
-import org.springframework.data.mongodb.core.aggregation.Aggregation
-import org.springframework.data.mongodb.core.aggregation.Aggregation.limit
-import org.springframework.data.mongodb.core.aggregation.Aggregation.skip
-import org.springframework.data.mongodb.core.aggregation.AggregationOperation
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
-import java.time.ZoneOffset.UTC
 import java.util.*
 
 @Service
-class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), MatchDao {
+class MatchDaoImpl(
+    private val createMatchUseCase: CreateMatchUseCase,
+    private val updateMatchUseCase: UpdateMatchUseCase,
+    private val findMatchUseCase: FindMatchUseCase,
+    mongoTemplate: MongoTemplate
+) : AbstractDao(mongoTemplate), MatchDao {
 
-    // TODO query por played at
+    override fun save(championshipId: String, matchDocument: MatchDocument): MatchDocument =
+        createMatchUseCase.createNewMatch(championshipId, matchDocument, mongoTemplate)
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
-    override fun save(championshipId: String, matchDocument: MatchDocument): MatchDocument {
-        logger.info { "Creating new match into championship $championshipId" }
-
-        val objectId = ObjectId()
-        pushNewMatchDocument(championshipId, objectId, matchDocument)
-
-        return this.findById(championshipId, objectId.toString())
-            .orElseThrow { MatchCreationException("Match does not throw error on creation but was not found") }
-    }
-
-    override fun update(championshipId: String, matchId: String, matchDocument: MatchDocument): MatchDocument =
-        logger.info { "Updating match with id $matchId from $championshipId" }
-            .let {
-                Query(
-                    Criteria.where(FIELD_ID)
-                        .`is`(championshipId)
-                        .andOperator(
-                            Criteria.where(FIELD_MATCHES)
-                                .elemMatch(Criteria.where(MatchDocument.FIELD_ID).`is`(matchId))
-                        )
-                )
-            }.let { query ->
-
-                return@let mongoTemplate.updateFirst(
-                    query,
-                    buildMatchUpdate(matchDocument.copy(id = matchId, updatedAt = LocalDateTime.now(UTC))),
-                    ChampionshipDocument::class.java
-                )
-            }.let {
-                if (it.modifiedCount != 1L) throw MatchUpdateException(matchDocument)
-                return@let findById(championshipId, matchId)
-                    .orElseThrow { MatchNotFoundException(matchId, championshipId) }
-            }
+    override fun update(
+        championshipId: String,
+        matchId: String,
+        matchDocument: MatchDocument
+    ): MatchDocument =
+        updateMatchUseCase.update(championshipId, matchId, matchDocument, mongoTemplate)
 
     override fun findById(championshipId: String, matchId: String): Optional<MatchDocument> =
-        logger.info { "Finding for matchDocument $matchId from championship $championshipId" }
-            .let { mutableListOf<AggregationOperation>() }
-            .also { it.add(Aggregation.match(Criteria.where(FIELD_ID).`is`(championshipId))) }
-            .also { it.add(Aggregation.unwind(FIELD_MATCHES)) }
-            .also {
-                it.add(
-                    Aggregation.match(
-                        Criteria.where("$FIELD_MATCHES.${MatchDocument.FIELD_ID}").`is`(ObjectId(matchId))
-                    )
-                )
-            }
-            .also { it.add(Aggregation.project(FIELD_ID, FIELD_NAME, FIELD_MATCHES)) }
-            .let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
-            .let { newAggregation ->
-
-                return@let Optional.ofNullable(
-                    mongoTemplate.aggregate(
-                        newAggregation,
-                        ChampionshipDocument::class.java,
-                        ChampionshipReducedDto::class.java
-                    ).uniqueMappedResult
-                ).map { championshipDto ->
-                    championshipDto.let {
-                        it.matches.copy(
-                            championship = MatchDocument.ChampionshipInfo(
-                                it.id,
-                                it.name
-                            )
-                        )
-                    }
-                }
-            }
+        findMatchUseCase.findById(championshipId, matchId, mongoTemplate)
 
     override fun findAll(
         championshipId: String?,
@@ -134,128 +44,20 @@ class MatchDaoImpl(mongoTemplate: MongoTemplate) : AbstractDao(mongoTemplate), M
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): Page<MatchDocument> {
-        return logger.info { "Finding all  matchs according to filters" }
-            .let {
-                val criteriaList = mutableListOf<Criteria>()
-                championshipId?.let { criteriaList.add(Criteria.where(FIELD_ID).`is`(it)) }
-                championshipName?.let {
-                    criteriaList.add(
-                        Criteria.where(FIELD_NAME).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                season?.let {
-                    criteriaList.add(
-                        Criteria.where(FIELD_SEASON).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                organizedBy?.let {
-                    criteriaList.add(
-                        Criteria.where(FIELD_ORGANIZED_BY).regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                return@let criteriaList
-            }.let { criteriaList ->
-                val aggregationOperationList = arrayListOf<AggregationOperation>()
-                if (criteriaList.isNotEmpty())
-                    aggregationOperationList.add(Aggregation.match(Criteria().orOperator(criteriaList)))
-                return@let aggregationOperationList
-            }
-            .also { it.add(Aggregation.unwind(FIELD_MATCHES)) }
-            .also { aggregationOperationList ->
-                val criteriaList = mutableListOf<Criteria>()
-                principal?.let {
-                    criteriaList.add(
-                        Criteria.where("$FIELD_MATCHES.$FIELD_PRINCIPAL_NAME")
-                            .regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                challenger?.let {
-                    criteriaList.add(
-                        Criteria.where("$FIELD_MATCHES.$FIELD_CHALLENGER_NAME")
-                            .regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                field?.let {
-                    criteriaList.add(
-                        Criteria.where("$FIELD_MATCHES.$FIELD_FIELD").regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-//                playedAt?.let { criteriaList.add(Criteria.where("$FIELD_MATCHES.$FIELD_PLAYED_AT").`is`(it)) }
-                matchEnded?.let {
-                    criteriaList.add(
-                        Criteria.where("$FIELD_MATCHES.$FIELD_MATCH_ENDED")
-                            .regex("^${it}", REGEX_OPTIONS_CASE_INSENSITIVE)
-                    )
-                }
-                if (criteriaList.isNotEmpty())
-                    aggregationOperationList.add(Aggregation.match(Criteria().orOperator(criteriaList)))
-            }
-            .also { it.add(Aggregation.sort(Sort.by(Sort.Direction.ASC, "$FIELD_MATCHES.$FIELD_PLAYED_AT"))) }
-            .also { it.add(Aggregation.project(FIELD_ID, FIELD_NAME, FIELD_MATCHES)) }
-            .also {
-                val facet = Aggregation.facet().and(skip(pageNumber.toLong() * pageSize), limit(pageSize.toLong()))
-                    .`as`(FIELD_DATA)
-                    .and(Aggregation.count().`as`(FIELD_PAGINATION_TOTAL)).`as`(FIELD_PAGINATION)
-                it.add(facet)
-            }
-            .also {
-                val elementAt =
-                    ArrayOperators.ArrayElemAt.arrayOf("\$$FIELD_PAGINATION.$FIELD_PAGINATION_TOTAL").elementAt(0)
-                it.add(Aggregation.addFields().addFieldWithValue(FIELD_PAGINATION_TOTAL, elementAt).build())
-            }
-            .also { it.add(Aggregation.project(FIELD_PAGINATION_TOTAL, FIELD_DATA)) }
-            .let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
-            .let { newAggregation ->
+    ): Page<MatchDocument> =
+        findMatchUseCase.findAll(
+            championshipId,
+            championshipName,
+            season,
+            organizedBy,
+            principal,
+            challenger,
+            field,
+            playedAt,
+            matchEnded,
+            pageNumber,
+            pageSize,
+            mongoTemplate
+        )
 
-                return@let Optional.ofNullable(
-                    mongoTemplate.aggregate(
-                        newAggregation,
-                        ChampionshipDocument::class.java,
-                        MatchPaginatedAggregationResultDto::class.java
-                    ).uniqueMappedResult
-                ).map { result ->
-                    val data = Optional.ofNullable(result.data)
-                        .map {
-                            it.stream().map { championship ->
-                                championship.matches.copy(
-                                    championship = MatchDocument.ChampionshipInfo(
-                                        championship.id,
-                                        championship.name
-                                    )
-                                )
-                            }.toList()
-                        }
-                        .orElse(emptyList())
-                    PageImpl<MatchDocument>(data, PageRequest.of(pageNumber, pageSize), result.total)
-
-                }.orElse(PageImpl<MatchDocument>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
-            }
-    }
-
-    fun pushNewMatchDocument(championshipId: String, matchObjectId: ObjectId, matchDocument: MatchDocument): Unit =
-        logger.info { "Pushing new match document with object id $matchObjectId" }
-            .let { Query() }
-            .also { it.addCriteria(Criteria.where(FIELD_ID).`is`(championshipId)) }
-            .let { query ->
-                val update = Update()
-                update.push(
-                    FIELD_MATCHES,
-                    matchDocument.copy(id = matchObjectId.toString(), createdAt = LocalDateTime.now(UTC))
-                )
-                return@let mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)
-            }.let {
-                if (it.matchedCount == 0L) throw MatchCreationException("Championship $championshipId does not exist and the match could not be created.")
-                if (it.matchedCount > 1L) throw MatchCreationException("More than one Championship has matched with $championshipId but only the first was update with new match.")
-            }
-
-    protected fun buildMatchUpdate(matchDocument: MatchDocument): Update =
-        Update().apply {
-            set("$FIELD_MATCHES.$.$FIELD_FIELD", matchDocument.field)
-            set("$FIELD_MATCHES.$.$FIELD_PLAYED_AT", matchDocument.playedAt)
-            set("$FIELD_MATCHES.$.$FIELD_PRINCIPAL", matchDocument.principal)
-            set("$FIELD_MATCHES.$.$FIELD_CHALLENGER", matchDocument.challenger)
-            set("$FIELD_MATCHES.$.$FIELD_UPDATED_AT", matchDocument.updatedAt)
-            set("$FIELD_MATCHES.$.$FIELD_MATCH_ENDED", matchDocument.matchEnded)
-        }
 }

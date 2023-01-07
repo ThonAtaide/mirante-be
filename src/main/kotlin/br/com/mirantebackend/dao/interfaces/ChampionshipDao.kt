@@ -18,6 +18,5 @@ interface ChampionshipDao {
         organizedBy: String? = null,
         pageNumber: Int,
         pageSize: Int
-
     ): Page<ChampionshipDocument>
 }

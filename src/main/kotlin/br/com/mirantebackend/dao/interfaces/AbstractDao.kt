@@ -6,6 +6,6 @@ abstract class AbstractDao(val mongoTemplate: MongoTemplate) {
 
     companion object {
         @JvmStatic
-        protected val REGEX_OPTIONS_CASE_INSENSITIVE = "i"
+        val REGEX_OPTIONS_CASE_INSENSITIVE = "i"
     }
 }
