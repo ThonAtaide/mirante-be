@@ -25,20 +25,16 @@ class NewsDaoImpl(
     }
 
     override fun createNews(newsDocument: NewsDocument): NewsDocument =
-        logger.info { "Creating a new document $newsDocument" }
-            .let { createNewsUseCase.createNews(newsDocument, mongoTemplate) }
+        createNewsUseCase.createNews(newsDocument, mongoTemplate)
 
     override fun updateNews(newsId: String, newsDocument: NewsDocument): NewsDocument =
-        logger.info { "Updating document $newsDocument" }
-            .let { updateNewsUseCase.updateNews(newsId, newsDocument, mongoTemplate) }
+        updateNewsUseCase.updateNews(newsId, newsDocument, mongoTemplate)
 
     override fun findById(newsId: String): Optional<NewsDocument> =
-        logger.info { "Finding news from id $newsId" }
-            .let { findNewsUseCase.findById(newsId, mongoTemplate) }
+        findNewsUseCase.findById(newsId, mongoTemplate)
 
     override fun findAll(pageNumber: Int, pageSize: Int): Page<NewsDocument> =
-        logger.info { "Finding news" }
-            .let { findNewsUseCase.findByAll(pageNumber, pageSize, mongoTemplate) }
+        findNewsUseCase.findByAll(pageNumber, pageSize, mongoTemplate)
 
 
 }

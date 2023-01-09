@@ -1,9 +1,9 @@
 package br.com.mirantebackend.dao.usecases.championship
 
-import br.com.mirantebackend.dao.aggregationDto.pagination.AbstractPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.aggregationDto.pagination.ChampionshipPaginatedAggregationResultDto
 import br.com.mirantebackend.dao.interfaces.AbstractDao
 import br.com.mirantebackend.dao.usecases.interfaces.championship.FindChampionshipUseCase
+import br.com.mirantebackend.dao.utils.AggregationUtils
 import br.com.mirantebackend.model.documents.ChampionshipDocument
 import mu.KotlinLogging
 import org.springframework.data.domain.Page
@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
 import java.util.*
@@ -86,34 +85,7 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                         ChampionshipDocument.FIELD_UPDATED_AT
                     )
                 )
-            }
-            .also {
-                val facet = Aggregation.facet().and(
-                    Aggregation.skip(pageNumber.toLong() * pageSize),
-                    Aggregation.limit(pageSize.toLong())
-                ).`as`(AbstractPaginatedAggregationResultDto.FIELD_DATA)
-                    .and(Aggregation.count().`as`(AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL)).`as`(
-                        AbstractPaginatedAggregationResultDto.FIELD_PAGINATION
-                    )
-                it.add(facet)
-            }.also {
-                val elementAt =
-                    ArrayOperators.ArrayElemAt.arrayOf("\$${AbstractPaginatedAggregationResultDto.FIELD_PAGINATION}.${AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL}")
-                        .elementAt(0)
-                it.add(
-                    Aggregation.addFields()
-                        .addFieldWithValue(AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL, elementAt)
-                        .build()
-                )
-            }
-            .also {
-                it.add(
-                    Aggregation.project(
-                        AbstractPaginatedAggregationResultDto.FIELD_PAGINATION_TOTAL,
-                        AbstractPaginatedAggregationResultDto.FIELD_DATA
-                    )
-                )
-            }.let { aggregationOperations -> Aggregation.newAggregation(aggregationOperations) }
+            }.let { AggregationUtils.buildNewPaginatedAggregation(pageNumber, pageSize, it) }
             .let { newAggregation ->
                 return@let Optional.ofNullable(
                     mongoTemplate.aggregate(

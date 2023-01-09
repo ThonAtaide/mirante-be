@@ -31,20 +31,20 @@ interface NewsController {
             MediaType.MULTIPART_FORM_DATA_VALUE
         ]
     )
-    fun updateNews(@PathVariable("newsId") newsId: Long, @ModelAttribute("news") news: NewsRequestDto): NewsDto
+    fun updateNews(@PathVariable("newsId") newsId: String, @ModelAttribute("news") news: NewsRequestDto): NewsDto
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(
         "/{newsId}",
         produces = [MediaType.APPLICATION_JSON_VALUE]
     )
-    fun getNews(@PathVariable("newsId") newsId: Long): NewsDto
+    fun getNews(@PathVariable("newsId") newsId: String): NewsDto
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNews(
         @RequestParam("title") title: String? = null,
-        @RequestParam(defaultValue = "10") pageSize: Long = 10,
-        @RequestParam(defaultValue = "0") pageNumber: Long = 0
+        @RequestParam(defaultValue = "10") pageSize: Int = 10,
+        @RequestParam(defaultValue = "0") pageNumber: Int = 0
     ): PageDto<NewsDto>
 }

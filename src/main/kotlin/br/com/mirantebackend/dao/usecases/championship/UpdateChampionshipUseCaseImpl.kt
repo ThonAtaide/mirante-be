@@ -34,9 +34,9 @@ class UpdateChampionshipUseCaseImpl(
                 .also { query -> query.addCriteria(Criteria.where(ChampionshipDocument.FIELD_ID).`is`(championshipId)) }
                 .let { query ->
                     val update = Update()
-                    championshipDocument.name.let { update.set(ChampionshipDocument.FIELD_NAME, it) }
-                    championshipDocument.season.let { update.set(ChampionshipDocument.FIELD_SEASON, it) }
-                    championshipDocument.organizedBy.let { update.set(ChampionshipDocument.FIELD_ORGANIZED_BY, it) }
+                    update.set(ChampionshipDocument.FIELD_NAME, championshipDocument.name)
+                    update.set(ChampionshipDocument.FIELD_SEASON, championshipDocument.season)
+                    update.set(ChampionshipDocument.FIELD_ORGANIZED_BY, championshipDocument.organizedBy)
                     update.set(ChampionshipDocument.FIELD_UPDATED_AT, LocalDateTime.now(ZoneOffset.UTC))
 
                     val updateResult = mongoTemplate.updateFirst(query, update, ChampionshipDocument::class.java)

@@ -13,15 +13,15 @@ class NewsControllerImpl(
 ) : NewsController {
 
     override fun createNews(news: NewsRequestDto): NewsDto =
-        newsService.createNews(news)
+        newsService.createNews(news, "Tester")
 
-    override fun updateNews(newsId: Long, news: NewsRequestDto): NewsDto =
+    override fun updateNews(newsId: String, news: NewsRequestDto): NewsDto =
         newsService.updateNews(newsId, news)
 
-    override fun getNews(newsId: Long): NewsDto =
+    override fun getNews(newsId: String): NewsDto =
         newsService.getNews(newsId)
 
 
-    override fun getNews(title: String?, pageSize: Long, pageNumber: Long): PageDto<NewsDto> =
+    override fun getNews(title: String?, pageSize: Int, pageNumber: Int): PageDto<NewsDto> =
         newsService.getNews(title, pageSize, pageNumber)
 }

@@ -39,9 +39,9 @@ class ChampionshipServiceImpl(
         try {
             return championshipDao.findById(championshipId)
                 .map {
-                     championshipDao.updateNonNestedFields(
+                    championshipDao.updateNonNestedFields(
                         championshipId,
-                        championship.copy(id = championshipId).toChampionshipDocument()
+                        it.copy(name = championship.name, season = championship.season, organizedBy = championship.organizedBy)
                     )
                 }
                 .orElseThrow { ChampionshipNotFoundException(championshipId) }
@@ -73,7 +73,7 @@ class ChampionshipServiceImpl(
         logger.info { "Finding championships with the following parameters name: $name" }
         try {
             return championshipDao.findAll(championshipName = name, pageNumber = pageNumber, pageSize = pageSize)
-                .map{ it.toChampionshipDto() }
+                .map { it.toChampionshipDto() }
                 .let { PageDto(it.pageable.pageSize, it.pageable.pageNumber, it.totalElements, it.content) }
         } catch (err: Exception) {
             logger.error { err.message }

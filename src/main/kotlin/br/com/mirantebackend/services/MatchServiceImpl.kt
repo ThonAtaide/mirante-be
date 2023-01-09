@@ -46,7 +46,7 @@ class MatchServiceImpl(
         logger.info { "Updating match $matchDto on championship $championshipId" }
         try {
             return matchDao.findById(championshipId, matchId)
-                .map { matchDao.update(championshipId, matchId, matchDto.toMatchDocument()) }
+                .map { matchDao.update(championshipId, matchId, matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument()) }
                 .orElseThrow { MatchNotFoundException(matchId, championshipId) }
                 .toMatchDto()
         } catch (err: MatchNotFoundException) {
