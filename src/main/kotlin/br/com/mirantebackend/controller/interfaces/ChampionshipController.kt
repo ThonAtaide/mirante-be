@@ -1,10 +1,11 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.model.dto.championship.ChampionshipDto
+import br.com.mirantebackend.controller.vo.ChampionshipVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/championship")
@@ -13,20 +14,20 @@ interface ChampionshipController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun createChampionship(@RequestBody championship: ChampionshipDto): ChampionshipDto
+    fun createChampionship(@Validated @RequestBody championship: ChampionshipVo): ChampionshipVo
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{championship-id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updateChampionship(
         @PathVariable("championship-id") championshipId: String,
-        @RequestBody championship: ChampionshipDto
-    ): ChampionshipDto
+        @Validated @RequestBody championship: ChampionshipVo
+    ): ChampionshipVo
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{championship-id}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getChampionship(
         @PathVariable("championship-id") championshipId: String
-    ): ChampionshipDto
+    ): ChampionshipVo
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -34,7 +35,7 @@ interface ChampionshipController {
         @RequestParam("name") name: String?,
         @RequestParam(defaultValue = "0") pageNumber: Int = 0,
         @RequestParam(defaultValue = "10") pageSize: Int = 10
-    ): PageDto<ChampionshipDto>
+    ): PageDto<ChampionshipVo>
 
 
 }

@@ -2,15 +2,12 @@ package br.com.mirantebackend.services.interfaces
 
 import br.com.mirantebackend.model.dto.championship.ChampionshipDto
 import br.com.mirantebackend.model.dto.pageable.PageDto
-import org.springframework.validation.annotation.Validated
-import javax.validation.Valid
 
-@Validated
 interface ChampionshipService {
 
-    fun createChampionship(@Valid championship: ChampionshipDto): ChampionshipDto
+    fun createChampionship(championship: ChampionshipDto): ChampionshipDto
 
-    fun updateChampionship(championshipId: String, @Valid championship: ChampionshipDto): ChampionshipDto
+    fun updateChampionship(championshipId: String, championship: ChampionshipDto): ChampionshipDto
 
     fun getChampionship(championshipId: String): ChampionshipDto
 

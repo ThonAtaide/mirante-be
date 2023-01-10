@@ -21,7 +21,7 @@ data class NewsDocument(
     var text: String,
 
     @Field("created_by")
-    val createdBy: String?,
+    val createdBy: String,
 
     @CreatedDate
     @Field("created_at")

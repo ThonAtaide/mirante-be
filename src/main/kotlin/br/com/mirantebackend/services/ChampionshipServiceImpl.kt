@@ -1,11 +1,11 @@
 package br.com.mirantebackend.services
 
-import br.com.mirantebackend.controller.mappers.toChampionshipDocument
-import br.com.mirantebackend.controller.mappers.toChampionshipDto
 import br.com.mirantebackend.dao.interfaces.ChampionshipDao
 import br.com.mirantebackend.exceptions.ChampionshipCreationException
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.ChampionshipUpdateException
+import br.com.mirantebackend.mapper.toChampionshipDocument
+import br.com.mirantebackend.mapper.toChampionshipDto
 import br.com.mirantebackend.model.dto.championship.ChampionshipDto
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.ChampionshipService
@@ -46,6 +46,9 @@ class ChampionshipServiceImpl(
                 }
                 .orElseThrow { ChampionshipNotFoundException(championshipId) }
                 .toChampionshipDto()
+        } catch (err: ChampionshipNotFoundException) {
+            logger.error { err.message }
+            throw err
         } catch (err: Exception) {
             logger.error { err.message }
             throw ChampionshipUpdateException("An error occurred and championship could not be updated successfully.")

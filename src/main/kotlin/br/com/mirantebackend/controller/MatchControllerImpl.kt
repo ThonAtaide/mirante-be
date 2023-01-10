@@ -1,11 +1,14 @@
 package br.com.mirantebackend.controller
 
 import br.com.mirantebackend.controller.interfaces.MatchController
-import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.controller.mappers.toMatchDto
+import br.com.mirantebackend.controller.mappers.toMatchVo
+import br.com.mirantebackend.controller.vo.MatchVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
+import java.util.*
 
 @RestController
 class MatchControllerImpl(
@@ -14,20 +17,22 @@ class MatchControllerImpl(
 
     override fun registerMatch(
         championshipId: String,
-        match: MatchDto
-    ): MatchDto = matchService.createMatch(championshipId, match)
+        match: MatchVo
+    ): MatchVo = match.toMatchDto()
+        .let { matchService.createMatch(championshipId, it) }
+        .toMatchVo()
 
 
     override fun updateMatch(
         championshipId: String,
         matchId: String,
-        match: MatchDto
-    ): MatchDto = matchService.updateMatch(championshipId, matchId, match)
+        match: MatchVo
+    ): MatchVo = match.toMatchDto()
+        .let { matchService.updateMatch(championshipId, matchId, it) }
+        .toMatchVo()
 
-
-    override fun getMatch(championshipId: String, matchId: String): MatchDto =
-        matchService.findById(championshipId, matchId)
-
+    override fun getMatch(championshipId: String, matchId: String): MatchVo =
+        matchService.findById(championshipId, matchId).toMatchVo()
 
     override fun getMatches(
         championshipId: String,
@@ -39,7 +44,7 @@ class MatchControllerImpl(
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): PageDto<MatchDto> {
+    ): PageDto<MatchVo> {
         return matchService.findAll(
             championshipId = championshipId,
             principal = principal,
@@ -48,7 +53,14 @@ class MatchControllerImpl(
             matchEnded = matchEnded,
             pageNumber = pageNumber,
             pageSize = pageSize
-        )
+        ).let { pageable ->
+            val data = Optional.ofNullable(pageable.records)
+                .map { content ->
+                    content.stream()
+                        .map { it.toMatchVo() }.toList()
+                }.orElse(emptyList())
+            return@let PageDto<MatchVo>(pageable.pageSize, pageable.pageNumber, pageable.total, data)
+        }
     }
 
     override fun getMatches(
@@ -60,7 +72,7 @@ class MatchControllerImpl(
         matchEnded: Boolean?,
         pageNumber: Int,
         pageSize: Int
-    ): PageDto<MatchDto> {
+    ): PageDto<MatchVo> {
         return matchService.findAll(
             principal = principal,
             challenger = challenger,
@@ -68,7 +80,14 @@ class MatchControllerImpl(
             matchEnded = matchEnded,
             pageNumber = pageNumber,
             pageSize = pageSize
-        )
+        ).let { pageable ->
+            val data = Optional.ofNullable(pageable.records)
+                .map { content ->
+                    content.stream()
+                        .map { it.toMatchVo() }.toList()
+                }.orElse(emptyList())
+            return@let PageDto<MatchVo>(pageable.pageSize, pageable.pageNumber, pageable.total, data)
+        }
     }
 
 }

@@ -1,13 +1,13 @@
 package br.com.mirantebackend.services
 
-import br.com.mirantebackend.controller.mappers.toMatchDocument
-import br.com.mirantebackend.controller.mappers.toMatchDto
 import br.com.mirantebackend.dao.interfaces.ChampionshipDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.MatchCreationException
 import br.com.mirantebackend.exceptions.MatchNotFoundException
 import br.com.mirantebackend.exceptions.MatchUpdateException
+import br.com.mirantebackend.mapper.toMatchDocument
+import br.com.mirantebackend.mapper.toMatchDto
 import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
@@ -46,7 +46,13 @@ class MatchServiceImpl(
         logger.info { "Updating match $matchDto on championship $championshipId" }
         try {
             return matchDao.findById(championshipId, matchId)
-                .map { matchDao.update(championshipId, matchId, matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument()) }
+                .map {
+                    matchDao.update(
+                        championshipId,
+                        matchId,
+                        matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument()
+                    )
+                }
                 .orElseThrow { MatchNotFoundException(matchId, championshipId) }
                 .toMatchDto()
         } catch (err: MatchNotFoundException) {

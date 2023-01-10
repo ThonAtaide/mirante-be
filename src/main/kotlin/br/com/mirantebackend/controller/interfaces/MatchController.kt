@@ -1,10 +1,11 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.model.dto.matches.MatchDto
+import br.com.mirantebackend.controller.vo.MatchVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
@@ -16,26 +17,26 @@ interface MatchController {
     @PostMapping("championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun registerMatch(
         @PathVariable("championship-id") championshipId: String,
-        @RequestBody match: MatchDto
-    ): MatchDto
+        @Validated @RequestBody match: MatchVo
+    ): MatchVo
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun updateMatch(
         @PathVariable("championship-id") championshipId: String,
         @PathVariable("matchId") matchId: String,
-        @RequestBody match: MatchDto
-    ): MatchDto
+        @Validated @RequestBody match: MatchVo
+    ): MatchVo
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatch(
         @PathVariable("championship-id") championshipId: String,
         @PathVariable("matchId") matchId: String
-    ): MatchDto
+    ): MatchVo
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("championship/{championship-id}/match",produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatches(
         @PathVariable("championship-id") championshipId: String,
         @RequestParam(name = "principal") principal: String?,
@@ -46,10 +47,10 @@ interface MatchController {
         @RequestParam(name = "matchEnded") matchEnded: Boolean?,
         @RequestParam(defaultValue = "0") pageNumber: Int,
         @RequestParam(defaultValue = "10") pageSize: Int
-    ): PageDto<MatchDto>
+    ): PageDto<MatchVo>
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("match",produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("match", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatches(
         @RequestParam(name = "principal") principal: String?,
         @RequestParam(name = "challenger") challenger: String?,
@@ -59,5 +60,5 @@ interface MatchController {
         @RequestParam(name = "matchEnded") matchEnded: Boolean?,
         @RequestParam(defaultValue = "0") pageNumber: Int,
         @RequestParam(defaultValue = "10") pageSize: Int
-    ): PageDto<MatchDto>
+    ): PageDto<MatchVo>
 }

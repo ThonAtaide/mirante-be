@@ -1,8 +1,8 @@
 package br.com.mirantebackend.services
 
-import br.com.mirantebackend.controller.mappers.toNewsDto
 import br.com.mirantebackend.dao.interfaces.NewsDao
 import br.com.mirantebackend.exceptions.NewsNotFoundException
+import br.com.mirantebackend.mapper.toNewsDto
 import br.com.mirantebackend.model.documents.NewsDocument
 import br.com.mirantebackend.model.dto.news.NewsDto
 import br.com.mirantebackend.model.dto.news.NewsRequestDto
@@ -25,19 +25,18 @@ class NewsServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun createNews(news: NewsRequestDto, createdBy: String): NewsDto {
-        val filePath = Optional.ofNullable(news.image)
-            .map { file -> fileStorageService.saveNewFile(file) }
-            .orElseThrow { Exception("") }
-
-        return NewsDocument(title = news.title, text = news.text, createdBy = createdBy, imagePath = filePath)
+    override fun createNews(news: NewsRequestDto, createdBy: String): NewsDto =
+        logger.info { "Creating new post $news" }
+            .let { news }
+            .let { fileStorageService.saveNewFile(it.image) }
+            .let { NewsDocument(title = news.title, text = news.text, createdBy = createdBy, imagePath = it) }
             .let { newsDao.createNews(it) }
             .toNewsDto()
-    }
 
     override fun updateNews(newsId: String, news: NewsRequestDto): NewsDto {
         return newsDao.findById(newsId)
             .map {
+
                 val filePath = Optional
                     .ofNullable(news.image)
                     .map { file -> fileStorageService.saveNewFile(file) }

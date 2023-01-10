@@ -1,7 +1,12 @@
 package br.com.mirantebackend.controller
 
+import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
+import br.com.mirantebackend.exceptions.MatchNotFoundException
+import br.com.mirantebackend.exceptions.NewsNotFoundException
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
@@ -20,6 +25,21 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         const val ERROR = "error"
     }
 
+    //TODO("ALTERAR ")
+    override fun handleMethodArgumentNotValid(
+        ex: MethodArgumentNotValidException,
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        logger.error { "Handling MethodArgumentNotValidException " }
+        val errorMessages = ex.fieldErrors.stream().map { it.defaultMessage }.distinct().toList()
+        return buildResponseError(
+            errorMessages,
+            ex::class.qualifiedName.toString(),
+            HttpStatus.BAD_REQUEST.value()
+        ).let { ResponseEntity.badRequest().body(it) }
+    }
 
     @ExceptionHandler(value = [ConstraintViolationException::class])
     protected fun handleConstraintViolation(
@@ -50,6 +70,24 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
             listOf(errorMessage),
             runtimeException::class.qualifiedName.toString(),
             HttpStatus.BAD_REQUEST.value()
+        ).let { ResponseEntity.badRequest().body(it) }
+    }
+
+    @ExceptionHandler(
+        value = [ChampionshipNotFoundException::class,
+            MatchNotFoundException::class, NewsNotFoundException::class]
+    )
+    protected fun handleNotFoundExceptions(
+        runtimeException: RuntimeException,
+        webRequest: WebRequest
+    ): ResponseEntity<Map<String, Any>> {
+        runtimeException.printStackTrace()
+        val errorMessage = runtimeException.message
+
+        return buildResponseError(
+            listOf(errorMessage),
+            runtimeException::class.qualifiedName.toString(),
+            HttpStatus.NOT_FOUND.value()
         ).let { ResponseEntity.badRequest().body(it) }
     }
 

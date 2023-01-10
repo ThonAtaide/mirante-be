@@ -1,29 +1,31 @@
 package br.com.mirantebackend.controller.mappers
 
+import br.com.mirantebackend.controller.vo.MatchVo
+import br.com.mirantebackend.controller.vo.TeamVo
+import br.com.mirantebackend.model.documents.MatchDocument
 import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.matches.TeamDto
-import br.com.mirantebackend.model.documents.MatchDocument
-import br.com.mirantebackend.model.documents.TeamDocument
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 
-fun MatchDto.toMatchDocument() = MatchDocument(
+fun MatchDto.toMatchVo() = MatchVo(
     id,
     field,
     playedAt,
-    principal = principal?.toTeamDocument(),
-    challenger = challenger?.toTeamDocument(),
-    createdAt,
+    principal = principal?.toTeamVo(),
+    challenger = challenger?.toTeamVo(),
+    matchEnded,
+    createdAt = createdAt,
     updatedAt = LocalDateTime.now(ZoneOffset.UTC),
-    matchEnded = matchEnded
+    championship = championship?.toChampionshipInfoVo()
 )
 
-fun TeamDto.toTeamDocument() = TeamDocument(
+fun TeamDto.toTeamVo() = TeamVo(
     name, score
 )
 
-fun MatchDocument.toMatchDto() = MatchDto(
+fun MatchVo.toMatchDto() = MatchDto(
     id,
     field,
     playedAt,
@@ -35,23 +37,16 @@ fun MatchDocument.toMatchDto() = MatchDto(
     championship = championship?.toChampionshipInfoDto()
 )
 
-fun TeamDocument.toTeamDto() = TeamDto(
+fun TeamVo.toTeamDto() = TeamDto(
     name, score
 )
 
-fun MatchDocument.toMatchDto(championshipId: String?, championshipName: String?) = MatchDto(
-    id,
-    field,
-    playedAt,
-    principal = principal?.toTeamDto(),
-    challenger = challenger?.toTeamDto(),
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    matchEnded = matchEnded,
-    championship = MatchDto.ChampionshipInfoDto(championshipId, championshipName)
+fun MatchDto.ChampionshipInfoDto.toChampionshipInfoVo() = MatchVo.ChampionshipInfoVo(
+    id = id,
+    name = name
 )
 
-fun MatchDocument.ChampionshipInfo.toChampionshipInfoDto() = MatchDto.ChampionshipInfoDto(
+fun MatchVo.ChampionshipInfoVo.toChampionshipInfoDto() = MatchDto.ChampionshipInfoDto(
     id = id,
     name = name
 )
