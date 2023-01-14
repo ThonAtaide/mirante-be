@@ -7,10 +7,12 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.lang.Exception
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 import javax.validation.ConstraintViolationException
@@ -23,6 +25,25 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         const val STATUS_CODE = "statusCode"
         const val TIMESTAMP = "timestamp"
         const val ERROR = "error"
+    }
+
+    override fun handleServletRequestBindingException(
+        ex: ServletRequestBindingException,
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        return super.handleServletRequestBindingException(ex, headers, status, request)
+    }
+
+    override fun handleExceptionInternal(
+        ex: Exception,
+        body: Any?,
+        headers: HttpHeaders,
+        status: HttpStatus,
+        request: WebRequest
+    ): ResponseEntity<Any> {
+        return super.handleExceptionInternal(ex, body, headers, status, request)
     }
 
     //TODO("ALTERAR ")

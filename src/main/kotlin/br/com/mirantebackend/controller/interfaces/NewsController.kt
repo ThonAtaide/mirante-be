@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RequestMapping("/news")
 @Tag(name = "NewsController", description = "Operations about news showed into feed")
@@ -17,24 +18,23 @@ interface NewsController {
     @PostMapping(
         produces = [MediaType.APPLICATION_JSON_VALUE],
         consumes = [
-            MediaType.APPLICATION_JSON_VALUE,
             MediaType.MULTIPART_FORM_DATA_VALUE
         ]
     )
-    fun createNews(@Validated @ModelAttribute("news") news: NewsRequestVo): NewsVo
+    fun createNews(@Validated @ModelAttribute news: NewsRequestVo, @ModelAttribute image: MultipartFile): NewsVo
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(
         "/{newsId}",
         produces = [MediaType.APPLICATION_JSON_VALUE],
         consumes = [
-            MediaType.APPLICATION_JSON_VALUE,
             MediaType.MULTIPART_FORM_DATA_VALUE
         ]
     )
     fun updateNews(
         @PathVariable("newsId") newsId: String,
-        @Validated @ModelAttribute("news") news: NewsRequestVo
+        @Validated @ModelAttribute("news") news: NewsRequestVo,
+        @ModelAttribute image: MultipartFile?
     ): NewsVo
 
     @ResponseStatus(HttpStatus.OK)

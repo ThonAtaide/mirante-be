@@ -8,8 +8,7 @@ import br.com.mirantebackend.model.dto.news.NewsRequestDto
 fun NewsRequestVo.toNewsRequestDto() = NewsRequestDto(
     id,
     title!!,
-    text!!,
-    image!!
+    text!!
 )
 
 fun NewsDto.toNewsVo() = NewsVo(

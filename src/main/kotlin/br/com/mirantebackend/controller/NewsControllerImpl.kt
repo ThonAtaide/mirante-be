@@ -8,6 +8,7 @@ import br.com.mirantebackend.controller.vo.NewsVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.NewsService
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @RestController
@@ -15,14 +16,14 @@ class NewsControllerImpl(
     private val newsService: NewsService
 ) : NewsController {
 
-    override fun createNews(news: NewsRequestVo): NewsVo =
+    override fun createNews(news: NewsRequestVo, image: MultipartFile): NewsVo =
         news.toNewsRequestDto()
-            .let { newsService.createNews(it, "Tester") }
+            .let { newsService.createNews(it, "Tester", image) }
             .toNewsVo()
 
-    override fun updateNews(newsId: String, news: NewsRequestVo): NewsVo =
+    override fun updateNews(newsId: String, news: NewsRequestVo, image: MultipartFile?): NewsVo =
         news.toNewsRequestDto()
-            .let { newsService.updateNews(newsId, it) }
+            .let { newsService.updateNews(newsId, it, image) }
             .toNewsVo()
 
     override fun getNews(newsId: String): NewsVo =

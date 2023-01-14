@@ -31,6 +31,7 @@ class UpdateNewsUseCaseImpl(
                 .also { it.addCriteria(Criteria.where(FIELD_ID).`is`(newsId)) }
                 .let { query ->
                     val update = Update()
+                    update.set(NewsDocument.FIELD_TITLE, news.title)
                     update.set(NewsDocument.FIELD_TEXT, news.text)
                     update.set(NewsDocument.FIELD_IMAGE_PATH, news.imagePath)
                     update.set(NewsDocument.FIELD_UPDATED_AT, LocalDateTime.now(UTC))

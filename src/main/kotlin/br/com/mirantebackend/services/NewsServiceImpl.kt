@@ -11,6 +11,7 @@ import br.com.mirantebackend.services.interfaces.FileStorageService
 import br.com.mirantebackend.services.interfaces.NewsService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 import java.util.*
@@ -25,20 +26,20 @@ class NewsServiceImpl(
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun createNews(news: NewsRequestDto, createdBy: String): NewsDto =
+    override fun createNews(news: NewsRequestDto, createdBy: String, image: MultipartFile): NewsDto =
         logger.info { "Creating new post $news" }
-            .let { news }
-            .let { fileStorageService.saveNewFile(it.image) }
+            .let { image }
+            .let { fileStorageService.saveNewFile(it) }
             .let { NewsDocument(title = news.title, text = news.text, createdBy = createdBy, imagePath = it) }
             .let { newsDao.createNews(it) }
             .toNewsDto()
 
-    override fun updateNews(newsId: String, news: NewsRequestDto): NewsDto {
+    override fun updateNews(newsId: String, news: NewsRequestDto, image: MultipartFile?): NewsDto {
         return newsDao.findById(newsId)
             .map {
 
                 val filePath = Optional
-                    .ofNullable(news.image)
+                    .ofNullable(image)
                     .map { file -> fileStorageService.saveNewFile(file) }
                     .orElse(it.imagePath)
 

@@ -11,6 +11,7 @@ import java.time.LocalDateTime
 @NoArgsConstructor
 @Document(collection = "coll_news")
 data class NewsDocument(
+
     @Id
     val id: String? = null,
 
@@ -36,6 +37,7 @@ data class NewsDocument(
 ) {
     companion object {
         const val FIELD_ID = "_id"
+        const val FIELD_TITLE = "title"
         const val FIELD_TEXT = "text"
         const val FIELD_CREATED_BY = "created_by"
         const val FIELD_CREATED_AT = "created_at"

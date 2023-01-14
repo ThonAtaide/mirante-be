@@ -34,7 +34,7 @@ class NewsDaoImpl(
         findNewsUseCase.findById(newsId, mongoTemplate)
 
     override fun findAll(pageNumber: Int, pageSize: Int): Page<NewsDocument> =
-        findNewsUseCase.findByAll(pageNumber, pageSize, mongoTemplate)
+        findNewsUseCase.findByAll(pageSize, pageNumber, mongoTemplate)
 
 
 }
