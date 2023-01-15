@@ -27,6 +27,4 @@ class CreateChampionshipUseCaseImpl : CreateChampionshipUseCase {
             throw ChampionshipCreationException(err)
         }
     }
-
-
 }

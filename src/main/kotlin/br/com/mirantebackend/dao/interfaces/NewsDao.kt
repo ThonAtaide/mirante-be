@@ -2,7 +2,7 @@ package br.com.mirantebackend.dao.interfaces
 
 import br.com.mirantebackend.model.documents.NewsDocument
 import org.springframework.data.domain.Page
-import java.util.*
+import java.util.Optional
 
 interface NewsDao {
 

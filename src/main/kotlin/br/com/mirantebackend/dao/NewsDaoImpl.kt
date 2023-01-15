@@ -10,7 +10,7 @@ import mu.KotlinLogging
 import org.springframework.data.domain.Page
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class NewsDaoImpl(
@@ -35,6 +35,4 @@ class NewsDaoImpl(
 
     override fun findAll(pageNumber: Int, pageSize: Int): Page<NewsDocument> =
         findNewsUseCase.findByAll(pageSize, pageNumber, mongoTemplate)
-
-
 }

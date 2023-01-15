@@ -24,5 +24,4 @@ interface MatchService {
         pageNumber: Int,
         pageSize: Int
     ): PageDto<MatchDto>
-
 }

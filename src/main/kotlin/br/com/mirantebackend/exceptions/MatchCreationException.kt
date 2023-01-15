@@ -1,6 +1,6 @@
 package br.com.mirantebackend.exceptions
 
-class MatchCreationException: RuntimeException {
+class MatchCreationException : RuntimeException {
 
-    constructor(message: String): super(message)
+    constructor(message: String) : super(message)
 }

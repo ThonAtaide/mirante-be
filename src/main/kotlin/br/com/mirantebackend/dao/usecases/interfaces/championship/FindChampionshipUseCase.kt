@@ -3,7 +3,7 @@ package br.com.mirantebackend.dao.usecases.interfaces.championship
 import br.com.mirantebackend.model.documents.ChampionshipDocument
 import org.springframework.data.domain.Page
 import org.springframework.data.mongodb.core.MongoTemplate
-import java.util.*
+import java.util.Optional
 
 interface FindChampionshipUseCase {
 

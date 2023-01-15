@@ -7,7 +7,7 @@ import br.com.mirantebackend.controller.vo.ChampionshipVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.ChampionshipService
 import org.springframework.web.bind.annotation.RestController
-import java.util.*
+import java.util.Optional
 
 @RestController
 class ChampionshipControllerImpl(
@@ -23,7 +23,6 @@ class ChampionshipControllerImpl(
         championship.toChampionshipDto()
             .let { championshipService.updateChampionship(championshipId, it) }
             .toChampionshipVo()
-
 
     override fun getChampionship(championshipId: String): ChampionshipVo =
         championshipService.getChampionship(championshipId).toChampionshipVo()

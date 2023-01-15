@@ -9,7 +9,7 @@ import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.NewsService
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import java.util.*
+import java.util.Optional
 
 @RestController
 class NewsControllerImpl(
@@ -28,7 +28,6 @@ class NewsControllerImpl(
 
     override fun getNews(newsId: String): NewsVo =
         newsService.getNews(newsId).toNewsVo()
-
 
     override fun getNews(title: String?, pageSize: Int, pageNumber: Int): PageDto<NewsVo> =
         newsService.getNews(title, pageSize, pageNumber)

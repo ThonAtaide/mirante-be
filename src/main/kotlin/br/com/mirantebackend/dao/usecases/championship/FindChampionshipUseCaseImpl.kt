@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
@@ -32,7 +32,6 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                 )
             }
 
-
     override fun findAll(
         championshipName: String?,
         season: String?,
@@ -47,7 +46,7 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                 championshipName?.let {
                     criteriaList.add(
                         Criteria.where(ChampionshipDocument.FIELD_NAME).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -55,7 +54,7 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                 season?.let {
                     criteriaList.add(
                         Criteria.where(ChampionshipDocument.FIELD_SEASON).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -63,7 +62,7 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                 organizedBy?.let {
                     criteriaList.add(
                         Criteria.where(ChampionshipDocument.FIELD_ORGANIZED_BY).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -102,7 +101,6 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
                         PageRequest.of(pageNumber, pageSize),
                         result.total
                     )
-
                 }.orElse(PageImpl<ChampionshipDocument>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
             }
     }

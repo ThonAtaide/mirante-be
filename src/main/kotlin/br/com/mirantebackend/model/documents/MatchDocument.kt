@@ -37,7 +37,7 @@ data class MatchDocument(
     @Field("match_ended")
     var matchEnded: Boolean = false,
 
-    @kotlin.jvm.Transient
+    @Transient
     var championship: ChampionshipInfo? = null
 
 ) {

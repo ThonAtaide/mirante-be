@@ -8,7 +8,7 @@ import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Optional
 
 @RestController
 class MatchControllerImpl(
@@ -21,7 +21,6 @@ class MatchControllerImpl(
     ): MatchVo = match.toMatchDto()
         .let { matchService.createMatch(championshipId, it) }
         .toMatchVo()
-
 
     override fun updateMatch(
         championshipId: String,
@@ -89,5 +88,4 @@ class MatchControllerImpl(
             return@let PageDto<MatchVo>(pageable.pageSize, pageable.pageNumber, pageable.total, data)
         }
     }
-
 }

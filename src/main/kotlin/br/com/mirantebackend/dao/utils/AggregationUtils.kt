@@ -48,6 +48,5 @@ class AggregationUtils {
                     AbstractPaginatedAggregationResultDto.FIELD_DATA
                 )
             )
-
     }
 }

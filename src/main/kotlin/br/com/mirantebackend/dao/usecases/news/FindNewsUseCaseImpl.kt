@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class FindNewsUseCaseImpl : FindNewsUseCase {

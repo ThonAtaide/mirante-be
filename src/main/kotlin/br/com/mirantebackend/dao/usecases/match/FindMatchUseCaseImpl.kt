@@ -22,7 +22,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class FindMatchUseCaseImpl : FindMatchUseCase {
@@ -99,7 +99,7 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                 championshipName?.let {
                     criteriaList.add(
                         Criteria.where(FIELD_NAME).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -107,7 +107,7 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                 season?.let {
                     criteriaList.add(
                         Criteria.where(ChampionshipDocument.FIELD_SEASON).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -115,7 +115,7 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                 organizedBy?.let {
                     criteriaList.add(
                         Criteria.where(ChampionshipDocument.FIELD_ORGANIZED_BY).regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -133,19 +133,19 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                 principal?.let {
                     criteriaList.add(
                         Criteria.where("$FIELD_MATCHES.${MatchDocument.FIELD_PRINCIPAL_NAME}")
-                            .regex("^${it}", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
+                            .regex("^$it", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
                     )
                 }
                 challenger?.let {
                     criteriaList.add(
                         Criteria.where("$FIELD_MATCHES.${MatchDocument.FIELD_CHALLENGER_NAME}")
-                            .regex("^${it}", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
+                            .regex("^$it", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
                     )
                 }
                 field?.let {
                     criteriaList.add(
                         Criteria.where("$FIELD_MATCHES.${MatchDocument.FIELD_FIELD}").regex(
-                            "^${it}",
+                            "^$it",
                             AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE
                         )
                     )
@@ -154,7 +154,7 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                 matchEnded?.let {
                     criteriaList.add(
                         Criteria.where("$FIELD_MATCHES.${MatchDocument.FIELD_MATCH_ENDED}")
-                            .regex("^${it}", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
+                            .regex("^$it", AbstractDao.REGEX_OPTIONS_CASE_INSENSITIVE)
                     )
                 }
                 if (criteriaList.isNotEmpty())
@@ -189,7 +189,6 @@ class FindMatchUseCaseImpl : FindMatchUseCase {
                         }
                         .orElse(emptyList())
                     PageImpl<MatchDocument>(data, PageRequest.of(pageNumber, pageSize), result.total)
-
                 }.orElse(PageImpl<MatchDocument>(emptyList(), PageRequest.of(pageNumber, pageSize), 0))
             }
     }

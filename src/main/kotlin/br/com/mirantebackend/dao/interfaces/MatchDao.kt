@@ -2,7 +2,7 @@ package br.com.mirantebackend.dao.interfaces
 
 import br.com.mirantebackend.model.documents.MatchDocument
 import org.springframework.data.domain.Page
-import java.util.*
+import java.util.Optional
 
 interface MatchDao {
 
@@ -26,5 +26,4 @@ interface MatchDao {
         pageSize: Int
 
     ): Page<MatchDocument>
-
 }

@@ -31,7 +31,6 @@ class ChampionshipServiceImpl(
             logger.error { err.message }
             throw ChampionshipCreationException("An error occurred and championship could not be created successfully.")
         }
-
     }
 
     override fun updateChampionship(championshipId: String, championship: ChampionshipDto): ChampionshipDto {
@@ -67,7 +66,6 @@ class ChampionshipServiceImpl(
         }
     }
 
-
     override fun getChampionships(
         name: String?,
         pageNumber: Int,
@@ -83,5 +81,4 @@ class ChampionshipServiceImpl(
             throw err
         }
     }
-
 }
