@@ -38,3 +38,4 @@ out/
 
 ### Mongo ###
 /mongo/
+/resources/uploads/

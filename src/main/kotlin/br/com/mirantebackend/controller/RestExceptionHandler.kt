@@ -24,8 +24,6 @@ import java.time.ZoneOffset.UTC
 @ControllerAdvice
 class RestExceptionHandler : ResponseEntityExceptionHandler() {
 
-    // TODO("IMPLEMENTAR TRATAMENTO")
-
     companion object {
         const val ERROR_MESSAGES = "errorMessages"
         const val STATUS_CODE = "statusCode"
@@ -61,6 +59,7 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any> {
         logger.error { "Handling MethodArgumentNotValidException " }
+        ex.printStackTrace()
         val errorMessages = ex.fieldErrors.stream().map { it.defaultMessage }.distinct().toList()
         return buildResponseError(
             errorMessages,
@@ -80,8 +79,8 @@ class RestExceptionHandler : ResponseEntityExceptionHandler() {
         return buildResponseError(
             listOf(errorMessage),
             runtimeException::class.qualifiedName.toString(),
-            HttpStatus.BAD_REQUEST.value()
-        ).let { ResponseEntity.badRequest().body(it) }
+            HttpStatus.INTERNAL_SERVER_ERROR.value()
+        ).let { ResponseEntity.internalServerError().body(it) }
     }
 
     @ExceptionHandler(
