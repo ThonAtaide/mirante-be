@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -63,35 +65,17 @@ class SecurityConfig(
         httpSecurity
             .authorizeRequests()
             .antMatchers("/actuator/**").permitAll()
-            .antMatchers("/user/**").permitAll()
-            .antMatchers("/championship/**").hasRole("ADMIN")
+            .antMatchers("/auth/**").permitAll()
+            .antMatchers(HttpMethod.GET,"/championship/**").permitAll()
+            .antMatchers(HttpMethod.PUT,"/championship/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.POST,"/championship/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.DELETE,"/championship/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .httpBasic(Customizer.withDefaults())
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer<*>::jwt);
+            httpSecurity.addFilterAfter(ValidateResourceBelongsToUserFilter(), BearerTokenAuthenticationFilter::class.java)
 
-//            .and()
-
-//        val authenticationManagerBuilder = httpSecurity.sharedObjects[AuthenticationManagerBuilder::class.java] as AuthenticationManagerBuilder
-//        httpSecurity.addFilterBefore(
-//            BearerTokenAuthenticationFilter(authenticationManagerBuilder), BearerTokenAuthenticationFilter::class.java
-//        )
-//            .httpBasic()
-//            .and()
-//            .authorizeRequests()
-////            .antMatchers("/**").permitAll()
-//            .antMatchers("/actuator/**").permitAll()
-//            .antMatchers(HttpMethod.POST,"/user/login").permitAll()
-////            .antMatchers("/championship/**").hasRole("ADMIN")
-//            .anyRequest().authenticated()
-//            .and().httpBasic()
-//            .and()
-//            .csrf()
-//            .and()
-//            .cors()
-//            .disable()
-//            .antMatchers("/actuator/**").permitAll()
-//            .antMatchers("/championship/**").hasRole("ADMIN")
 
         return httpSecurity.build();
     }
@@ -100,7 +84,7 @@ class SecurityConfig(
     fun jwtAuthenticationConverter(): JwtAuthenticationConverter? {
         val jwtGrantedAuthoritiesConverter = JwtGrantedAuthoritiesConverter()
         jwtGrantedAuthoritiesConverter.setAuthoritiesClaimName("roles")
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_")
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("")
         val jwtAuthenticationConverter = JwtAuthenticationConverter()
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter)
         return jwtAuthenticationConverter

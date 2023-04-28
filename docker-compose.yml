@@ -16,6 +16,8 @@ services:
 
   mongo-express:
     image: mongo-express
+    depends_on:
+      - mirante-db
     ports:
       - 8081:8081
     environment:

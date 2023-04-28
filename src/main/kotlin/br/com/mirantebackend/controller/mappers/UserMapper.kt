@@ -7,7 +7,7 @@ import br.com.mirantebackend.model.documents.UserDocument
 import br.com.mirantebackend.model.dto.authentication.CreateUserDto
 import br.com.mirantebackend.model.dto.authentication.UserCredentialsDto
 import br.com.mirantebackend.model.dto.authentication.UserSessionDto
-import br.com.mirantebackend.model.enums.UserAuthoritiesEnum
+import br.com.mirantebackend.model.enums.UserRolesEnum
 
 fun CreateUserVo.toCreateUserDto() = CreateUserDto(
     username!!,
@@ -31,5 +31,5 @@ fun CreateUserDto.toUserDocument() = UserDocument(
     nickname = nickname,
     email = email,
     password = password,
-    userRole = UserAuthoritiesEnum.COMMON_USER
+    userRole = UserRolesEnum.ROLE_COMMON_USER
 )

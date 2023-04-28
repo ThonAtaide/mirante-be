@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 
-@RequestMapping("/user")
+@RequestMapping("/auth")
 @Tag(name = "AuthenticationController", description = "Operations about user credentials")
 interface AuthenticationController {
 

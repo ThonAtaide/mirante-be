@@ -1,6 +1,6 @@
 package br.com.mirantebackend.model.documents
 
-import br.com.mirantebackend.model.enums.UserAuthoritiesEnum
+import br.com.mirantebackend.model.enums.UserRolesEnum
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -26,7 +26,7 @@ data class UserDocument(
     var password: String,
 
     @Field("user_role")
-    var userRole: UserAuthoritiesEnum,
+    var userRole: UserRolesEnum,
 
     @Field("is_enable")
     var isEnable: Boolean = true,

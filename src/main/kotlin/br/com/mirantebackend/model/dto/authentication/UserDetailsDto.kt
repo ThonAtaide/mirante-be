@@ -1,6 +1,6 @@
 package br.com.mirantebackend.model.dto.authentication
 
-import br.com.mirantebackend.model.enums.UserAuthoritiesEnum
+import br.com.mirantebackend.model.enums.UserRolesEnum
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import java.time.LocalDateTime
@@ -16,7 +16,7 @@ data class UserDetailsDto(
 
     private val password: String,
 
-    private val userRole: UserAuthoritiesEnum,
+    private val userRole: UserRolesEnum,
 
     private val isEnable: Boolean,
 
