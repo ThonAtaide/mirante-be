@@ -3,7 +3,7 @@ package br.com.mirantebackend.controller
 import br.com.mirantebackend.controller.interfaces.ChampionshipController
 import br.com.mirantebackend.controller.mappers.toChampionshipDto
 import br.com.mirantebackend.controller.mappers.toChampionshipVo
-import br.com.mirantebackend.controller.vo.ChampionshipVo
+import br.com.mirantebackend.controller.vo.championship.ChampionshipVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.ChampionshipService
 import org.springframework.web.bind.annotation.RestController

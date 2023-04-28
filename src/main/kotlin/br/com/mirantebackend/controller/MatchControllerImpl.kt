@@ -3,7 +3,7 @@ package br.com.mirantebackend.controller
 import br.com.mirantebackend.controller.interfaces.MatchController
 import br.com.mirantebackend.controller.mappers.toMatchDto
 import br.com.mirantebackend.controller.mappers.toMatchVo
-import br.com.mirantebackend.controller.vo.MatchVo
+import br.com.mirantebackend.controller.vo.match.MatchVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.MatchService
 import org.springframework.web.bind.annotation.RestController

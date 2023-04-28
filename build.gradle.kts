@@ -36,6 +36,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+    implementation("org.springframework.boot:spring-boot-starter-security:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+
     compile("org.springframework.cloud:spring-cloud-starter-sleuth")
 
     implementation("org.springdoc:springdoc-openapi-ui:1.6.0")

@@ -1,7 +1,7 @@
 package br.com.mirantebackend.controller.mappers
 
-import br.com.mirantebackend.controller.vo.MatchVo
-import br.com.mirantebackend.controller.vo.TeamVo
+import br.com.mirantebackend.controller.vo.match.MatchVo
+import br.com.mirantebackend.controller.vo.match.TeamVo
 import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.matches.TeamDto
 import java.time.LocalDateTime

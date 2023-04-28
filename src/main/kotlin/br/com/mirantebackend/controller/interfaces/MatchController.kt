@@ -1,6 +1,6 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.controller.vo.MatchVo
+import br.com.mirantebackend.controller.vo.match.MatchVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus

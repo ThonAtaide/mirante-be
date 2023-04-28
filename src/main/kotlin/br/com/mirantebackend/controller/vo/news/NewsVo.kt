@@ -1,4 +1,4 @@
-package br.com.mirantebackend.controller.vo
+package br.com.mirantebackend.controller.vo.news
 
 import br.com.mirantebackend.model.dto.pageable.RecordDto
 import java.time.LocalDateTime

@@ -1,5 +1,6 @@
-package br.com.mirantebackend.controller.vo
+package br.com.mirantebackend.controller.vo.championship
 
+import br.com.mirantebackend.controller.vo.match.MatchVo
 import br.com.mirantebackend.model.dto.pageable.RecordDto
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime

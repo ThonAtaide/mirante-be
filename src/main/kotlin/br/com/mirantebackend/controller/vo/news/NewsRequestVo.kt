@@ -1,4 +1,4 @@
-package br.com.mirantebackend.controller.vo
+package br.com.mirantebackend.controller.vo.news
 
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull

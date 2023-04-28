@@ -1,7 +1,7 @@
 package br.com.mirantebackend.controller.mappers
 
-import br.com.mirantebackend.controller.vo.NewsRequestVo
-import br.com.mirantebackend.controller.vo.NewsVo
+import br.com.mirantebackend.controller.vo.news.NewsRequestVo
+import br.com.mirantebackend.controller.vo.news.NewsVo
 import br.com.mirantebackend.model.dto.news.NewsDto
 import br.com.mirantebackend.model.dto.news.NewsRequestDto
 

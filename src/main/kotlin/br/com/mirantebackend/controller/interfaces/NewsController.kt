@@ -1,7 +1,7 @@
 package br.com.mirantebackend.controller.interfaces
 
-import br.com.mirantebackend.controller.vo.NewsRequestVo
-import br.com.mirantebackend.controller.vo.NewsVo
+import br.com.mirantebackend.controller.vo.news.NewsRequestVo
+import br.com.mirantebackend.controller.vo.news.NewsVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus

@@ -1,6 +1,6 @@
 package br.com.mirantebackend.controller.mappers
 
-import br.com.mirantebackend.controller.vo.ChampionshipVo
+import br.com.mirantebackend.controller.vo.championship.ChampionshipVo
 import br.com.mirantebackend.model.dto.championship.ChampionshipDto
 
 fun ChampionshipDto.toChampionshipVo() = ChampionshipVo(

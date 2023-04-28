@@ -3,8 +3,8 @@ package br.com.mirantebackend.controller
 import br.com.mirantebackend.controller.interfaces.NewsController
 import br.com.mirantebackend.controller.mappers.toNewsRequestDto
 import br.com.mirantebackend.controller.mappers.toNewsVo
-import br.com.mirantebackend.controller.vo.NewsRequestVo
-import br.com.mirantebackend.controller.vo.NewsVo
+import br.com.mirantebackend.controller.vo.news.NewsRequestVo
+import br.com.mirantebackend.controller.vo.news.NewsVo
 import br.com.mirantebackend.model.dto.pageable.PageDto
 import br.com.mirantebackend.services.interfaces.NewsService
 import org.springframework.web.bind.annotation.RestController

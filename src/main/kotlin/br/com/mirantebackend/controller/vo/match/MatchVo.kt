@@ -1,4 +1,4 @@
-package br.com.mirantebackend.controller.vo
+package br.com.mirantebackend.controller.vo.match
 
 import br.com.mirantebackend.model.dto.pageable.RecordDto
 import com.fasterxml.jackson.annotation.JsonInclude
