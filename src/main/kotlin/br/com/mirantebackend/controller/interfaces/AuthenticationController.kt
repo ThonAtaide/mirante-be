@@ -3,7 +3,6 @@ package br.com.mirantebackend.controller.interfaces
 import br.com.mirantebackend.controller.vo.authentication.CreateUserVo
 import br.com.mirantebackend.controller.vo.authentication.RecoverUserCredentialsVo
 import br.com.mirantebackend.controller.vo.authentication.UserCredentialsVo
-import br.com.mirantebackend.controller.vo.authentication.UserSessionVo
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -47,6 +46,4 @@ interface AuthenticationController {
         ]
     )
     fun recoverAccess(@Validated @RequestBody recoverUserCredentialsVo: RecoverUserCredentialsVo): String
-
-
 }

@@ -15,7 +15,7 @@ class MatchControllerImpl(
     private val matchService: MatchService
 ) : MatchController {
 
-    override fun registerMatch(
+    override fun createMatch(
         championshipId: String,
         match: MatchVo
     ): MatchVo = match.toMatchDto()
@@ -23,17 +23,16 @@ class MatchControllerImpl(
         .toMatchVo()
 
     override fun updateMatch(
-        championshipId: String,
         matchId: String,
         match: MatchVo
     ): MatchVo = match.toMatchDto()
-        .let { matchService.updateMatch(championshipId, matchId, it) }
+        .let { matchService.updateMatch(matchId, it) }
         .toMatchVo()
 
-    override fun getMatch(championshipId: String, matchId: String): MatchVo =
-        matchService.findById(championshipId, matchId).toMatchVo()
+    override fun getMatch(matchId: String): MatchVo =
+        matchService.findById(matchId).toMatchVo()
 
-    override fun getMatches(
+    override fun getMatchesFromChampionship(
         championshipId: String,
         principal: String?,
         challenger: String?,
@@ -62,7 +61,7 @@ class MatchControllerImpl(
         }
     }
 
-    override fun getMatches(
+    override fun getMatchesFromChampionship(
         principal: String?,
         challenger: String?,
         field: String?,

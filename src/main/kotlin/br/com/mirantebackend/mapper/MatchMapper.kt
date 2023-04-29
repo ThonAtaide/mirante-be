@@ -5,8 +5,6 @@ import br.com.mirantebackend.model.documents.MatchDocument
 import br.com.mirantebackend.model.documents.TeamDocument
 import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.matches.TeamDto
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 fun MatchDto.toMatchDocument(championshipDocument: ChampionshipDocument) = MatchDocument(
     id,
@@ -15,7 +13,7 @@ fun MatchDto.toMatchDocument(championshipDocument: ChampionshipDocument) = Match
     principal = principal?.toTeamDocument(),
     challenger = challenger?.toTeamDocument(),
     createdAt,
-    updatedAt = LocalDateTime.now(ZoneOffset.UTC),
+    updatedAt,
     matchEnded = matchEnded,
     championship = championshipDocument
 )

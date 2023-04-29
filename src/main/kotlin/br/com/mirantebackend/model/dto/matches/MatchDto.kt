@@ -2,7 +2,6 @@ package br.com.mirantebackend.model.dto.matches
 
 import br.com.mirantebackend.model.dto.championship.ChampionshipDto
 import br.com.mirantebackend.model.dto.pageable.RecordDto
-import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull

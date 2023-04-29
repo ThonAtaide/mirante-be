@@ -1,6 +1,5 @@
 package br.com.mirantebackend.services
 
-import br.com.mirantebackend.dao.interfaces.ChampionshipDao
 import br.com.mirantebackend.dao.interfaces.MatchDao
 import br.com.mirantebackend.exceptions.ChampionshipNotFoundException
 import br.com.mirantebackend.exceptions.MatchCreationException
@@ -44,16 +43,16 @@ class MatchServiceImpl(
         }
     }
 
-    override fun updateMatch(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto {
-        logger.info { "Updating match $matchDto on championship $championshipId" }
+    override fun updateMatch(matchId: String, matchDto: MatchDto): MatchDto {
+        logger.info { "Updating match $matchDto" }
         try {
-            return matchDocumentRepository.findByIdAndChampionship(matchId, championshipId)
+            return matchDocumentRepository.findById(matchId)
                 .map {
                     matchDocumentRepository.save(
                         matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument(it.championship)
                     )
                 }
-                .orElseThrow { MatchNotFoundException(matchId, championshipId) }
+                .orElseThrow { MatchNotFoundException(matchId) }
                 .toMatchDto()
         } catch (err: MatchNotFoundException) {
             logger.error { err.message }
@@ -64,9 +63,9 @@ class MatchServiceImpl(
         }
     }
 
-    override fun findById(championshipId: String, matchId: String): MatchDto =
-        matchDocumentRepository.findByIdAndChampionship(matchId, championshipId)
-            .orElseThrow { MatchNotFoundException(matchId, championshipId) }
+    override fun findById(matchId: String): MatchDto =
+        matchDocumentRepository.findById(matchId)
+            .orElseThrow { MatchNotFoundException(matchId) }
             .toMatchDto()
 
     override fun findAll(

@@ -22,7 +22,7 @@ data class UserDetailsDto(
 
     private val createdAt: LocalDateTime
 
-):UserDetails {
+) : UserDetails {
 
     override fun getUsername(): String = username
 

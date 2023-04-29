@@ -1,5 +1,6 @@
 package br.com.mirantebackend.config
 
+import br.com.mirantebackend.filters.ValidateResourceBelongsToUserFilter
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
@@ -29,7 +30,6 @@ import org.springframework.web.filter.CorsFilter
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
-
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
@@ -52,12 +52,11 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
 
-        httpSecurity.cors().and().csrf().disable();
+        httpSecurity.cors().and().csrf().disable()
 
-        httpSecurity.exceptionHandling{
-            errorHandler ->
-                errorHandler
-                    .authenticationEntryPoint(customAuthenticationEntryPoint)
+        httpSecurity.exceptionHandling { errorHandler ->
+            errorHandler
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
         }
 
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -66,20 +65,18 @@ class SecurityConfig(
             .authorizeRequests()
             .antMatchers("/actuator/**").permitAll()
             .antMatchers("/auth/**").permitAll()
-            .antMatchers(HttpMethod.GET,"/championship/**").permitAll()
-            .antMatchers(HttpMethod.GET,"/match/**").permitAll()
-            .antMatchers(HttpMethod.PUT,"/championship/**").hasRole("ADMIN")
-            .antMatchers(HttpMethod.POST,"/championship/**").hasRole("ADMIN")
-            .antMatchers(HttpMethod.DELETE,"/championship/**").hasRole("ADMIN")
-
+            .antMatchers(HttpMethod.GET, "/championship/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/match/**").permitAll()
+            .antMatchers(HttpMethod.PUT, "/championship/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.POST, "/championship/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.DELETE, "/championship/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .httpBasic(Customizer.withDefaults())
-            .oauth2ResourceServer(OAuth2ResourceServerConfigurer<*>::jwt);
-            httpSecurity.addFilterAfter(ValidateResourceBelongsToUserFilter(), BearerTokenAuthenticationFilter::class.java)
+            .oauth2ResourceServer(OAuth2ResourceServerConfigurer<*>::jwt)
+        httpSecurity.addFilterAfter(ValidateResourceBelongsToUserFilter(), BearerTokenAuthenticationFilter::class.java)
 
-
-        return httpSecurity.build();
+        return httpSecurity.build()
     }
 
     @Bean
@@ -118,9 +115,9 @@ class SecurityConfig(
     }
 
     @Bean
-    fun jwtEncoder(): JwtEncoder { //todo REVER encoder
+    fun jwtEncoder(): JwtEncoder { // todo REVER encoder
         val key: SecretKey = SecretKeySpec(secret.encodeToByteArray(), "HmacSHA256")
-        val immutableSecret: JWKSource<SecurityContext> = ImmutableSecret<SecurityContext>(key)
+        val immutableSecret: JWKSource<SecurityContext> = ImmutableSecret(key)
         return NimbusJwtEncoder(immutableSecret)
     }
 

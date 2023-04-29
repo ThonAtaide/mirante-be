@@ -10,6 +10,7 @@ import java.time.Instant
 class JwtUtils() {
 
     companion object {
+        public val BEARER_PREFIX = "Bearer"
 
         fun buildJwtToken(
             user: User,
@@ -19,7 +20,7 @@ class JwtUtils() {
             val nowInstant = Instant.now()
             val jwsHeader = JwsHeader.with { "HS256" }.build()
             val claims = JwtClaimsSet.builder()
-                .issuer("mirante.be") //todo refatorar depois
+                .issuer("mirante.be") // todo refatorar depois
                 .issuedAt(nowInstant)
                 .expiresAt(nowInstant.plusMillis(tokenDuration))
                 .subject(it.username)

@@ -3,7 +3,6 @@ package br.com.mirantebackend.dao.usecases.interfaces.match
 import br.com.mirantebackend.model.documents.MatchDocument
 import org.springframework.data.domain.Page
 import org.springframework.data.mongodb.core.MongoTemplate
-import java.util.Optional
 
 interface FindMatchUseCase {
 

@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Optional
 
 @Service
 class FindChampionshipUseCaseImpl : FindChampionshipUseCase {

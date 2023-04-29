@@ -8,9 +8,9 @@ interface MatchService {
 
     fun createMatch(championshipId: String, matchDto: MatchDto): MatchDto
 
-    fun updateMatch(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto
+    fun updateMatch(matchId: String, matchDto: MatchDto): MatchDto
 
-    fun findById(championshipId: String, matchId: String): MatchDto
+    fun findById(matchId: String): MatchDto
 
     fun findAll(
         championshipId: String? = null,

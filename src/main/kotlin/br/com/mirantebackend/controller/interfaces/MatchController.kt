@@ -17,55 +17,53 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import java.time.LocalDateTime
 
 @RequestMapping
-@Tag(name = "MatchController", description = "Gerenciamento de partidas relacionadas a determinado campeonato.")
+@Tag(name = "MatchController", description = "Gerenciamento de partidas.")
 interface MatchController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun registerMatch(
+    fun createMatch(
         @PathVariable("championship-id") championshipId: String,
         @Validated @RequestBody match: MatchVo
     ): MatchVo
 
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateMatch(
+    @GetMapping("/championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getMatchesFromChampionship(
         @PathVariable("championship-id") championshipId: String,
+        @RequestParam(name = "principal") principal: String?,
+        @RequestParam(name = "challenger") challenger: String?,
+        @RequestParam(name = "field") field: String?,
+        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
+        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
+        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
+        @RequestParam(defaultValue = "0") pageNumber: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): PageDto<MatchVo>
+
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateMatch(
         @PathVariable("matchId") matchId: String,
         @Validated @RequestBody match: MatchVo
     ): MatchVo
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/championship/{championship-id}/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping("/match", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun getMatchesFromChampionship(
+        @RequestParam(name = "principal") principal: String?,
+        @RequestParam(name = "challenger") challenger: String?,
+        @RequestParam(name = "field") field: String?,
+        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
+        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
+        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
+        @RequestParam(defaultValue = "0") pageNumber: Int,
+        @RequestParam(defaultValue = "10") pageSize: Int
+    ): PageDto<MatchVo>
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/match/{matchId}", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getMatch(
-        @PathVariable("championship-id") championshipId: String,
         @PathVariable("matchId") matchId: String
     ): MatchVo
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/championship/{championship-id}/match", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMatches(
-        @PathVariable("championship-id") championshipId: String,
-        @RequestParam(name = "principal") principal: String?,
-        @RequestParam(name = "challenger") challenger: String?,
-        @RequestParam(name = "field") field: String?,
-        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
-        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
-        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
-        @RequestParam(defaultValue = "0") pageNumber: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int
-    ): PageDto<MatchVo>
-
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/match", produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun getMatches(
-        @RequestParam(name = "principal") principal: String?,
-        @RequestParam(name = "challenger") challenger: String?,
-        @RequestParam(name = "field") field: String?,
-        @RequestParam(name = "playedAtAfter") playedAtAfter: LocalDateTime?,
-        @RequestParam(name = "playedAtBefore") playedAtBefore: LocalDateTime?,
-        @RequestParam(name = "matchEnded") matchEnded: Boolean?,
-        @RequestParam(defaultValue = "0") pageNumber: Int,
-        @RequestParam(defaultValue = "10") pageSize: Int
-    ): PageDto<MatchVo>
 }
