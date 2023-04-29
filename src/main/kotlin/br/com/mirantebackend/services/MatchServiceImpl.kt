@@ -71,7 +71,6 @@ class MatchServiceImpl(
 
     override fun findAll(
         championshipId: String?,
-        championshipName: String?,
         principal: String?,
         challenger: String?,
         field: String?,
@@ -82,7 +81,6 @@ class MatchServiceImpl(
         pageSize: Int
     ): PageDto<MatchDto> = matchDao.findAll(
         championshipId = championshipId,
-        championshipName = championshipName,
         principal = principal,
         challenger = challenger,
         field = field,

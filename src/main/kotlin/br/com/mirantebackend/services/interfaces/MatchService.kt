@@ -14,7 +14,6 @@ interface MatchService {
 
     fun findAll(
         championshipId: String? = null,
-        championshipName: String? = null,
         principal: String? = null,
         challenger: String? = null,
         field: String? = null,

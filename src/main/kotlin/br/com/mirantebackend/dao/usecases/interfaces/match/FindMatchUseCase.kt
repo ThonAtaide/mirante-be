@@ -7,13 +7,8 @@ import java.util.Optional
 
 interface FindMatchUseCase {
 
-    fun findById(championshipId: String, matchId: String, mongoTemplate: MongoTemplate): Optional<MatchDocument>
-
     fun findAll(
         championshipId: String? = null,
-        championshipName: String? = null,
-        season: String? = null,
-        organizedBy: String? = null,
         principal: String? = null,
         challenger: String? = null,
         field: String? = null,

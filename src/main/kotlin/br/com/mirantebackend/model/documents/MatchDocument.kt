@@ -1,6 +1,8 @@
 package br.com.mirantebackend.model.documents
 
 import br.com.mirantebackend.annotations.NoArgsConstructor
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.mongodb.core.mapping.DocumentReference
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
@@ -29,9 +31,11 @@ data class MatchDocument(
     @Field("challenger")
     var challenger: TeamDocument? = null,
 
+    @CreatedDate
     @Field("created_at")
     val createdAt: LocalDateTime? = null,
 
+    @LastModifiedDate
     @Field("updated_at")
     var updatedAt: LocalDateTime? = null,
 
@@ -49,6 +53,7 @@ data class MatchDocument(
         const val FIELD_PRINCIPAL_NAME = "principal.name"
         const val FIELD_CHALLENGER = "challenger"
         const val FIELD_CHALLENGER_NAME = "challenger.name"
+        const val FIELD_CREATED_AT = "created_at"
         const val FIELD_UPDATED_AT = "updated_at"
         const val FIELD_MATCH_ENDED = "match_ended"
         const val FIELD_CHAMPIONSHIP_ID = "championship.id"

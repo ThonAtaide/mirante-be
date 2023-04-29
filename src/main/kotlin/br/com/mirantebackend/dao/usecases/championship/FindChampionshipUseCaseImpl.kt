@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.stereotype.Service
-import java.util.Optional
+import java.util.*
 
 @Service
 class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
@@ -23,14 +23,6 @@ class FindChampionshipUseCaseImpl : FindChampionshipUseCase {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
-
-    override fun findById(championshipId: String, mongoTemplate: MongoTemplate): Optional<ChampionshipDocument> =
-        logger.info { "Fetching championship with id: $championshipId" }
-            .let {
-                Optional.ofNullable(
-                    mongoTemplate.findById(championshipId, ChampionshipDocument::class.java)
-                )
-            }
 
     override fun findAll(
         championshipName: String?,
