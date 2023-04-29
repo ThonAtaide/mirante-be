@@ -29,7 +29,7 @@ class AuthServiceImpl(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val TOKEN_DURATION: Long = 10000 //TODO REPLACE ADJUST
+        private val TOKEN_DURATION: Long = 600000 //TODO REPLACE ADJUST
     }
 
     override fun login(userCredentials: UserCredentialsDto): String {

@@ -1,6 +1,7 @@
 package br.com.mirantebackend.model.documents
 
 import br.com.mirantebackend.annotations.NoArgsConstructor
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
@@ -37,15 +38,9 @@ data class MatchDocument(
     @Field("match_ended")
     var matchEnded: Boolean = false,
 
-    @Transient
-    var championship: ChampionshipInfo? = null
-
+    @DocumentReference
+    var championship: ChampionshipDocument,
 ) {
-    data class ChampionshipInfo(
-        var id: String?,
-        var name: String?
-    )
-
     companion object {
         const val FIELD_ID = "_id"
         const val FIELD_FIELD = "field"
@@ -56,5 +51,6 @@ data class MatchDocument(
         const val FIELD_CHALLENGER_NAME = "challenger.name"
         const val FIELD_UPDATED_AT = "updated_at"
         const val FIELD_MATCH_ENDED = "match_ended"
+        const val FIELD_CHAMPIONSHIP_ID = "championship.id"
     }
 }

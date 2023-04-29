@@ -67,9 +67,11 @@ class SecurityConfig(
             .antMatchers("/actuator/**").permitAll()
             .antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET,"/championship/**").permitAll()
+            .antMatchers(HttpMethod.GET,"/match/**").permitAll()
             .antMatchers(HttpMethod.PUT,"/championship/**").hasRole("ADMIN")
             .antMatchers(HttpMethod.POST,"/championship/**").hasRole("ADMIN")
             .antMatchers(HttpMethod.DELETE,"/championship/**").hasRole("ADMIN")
+
             .anyRequest().authenticated()
             .and()
             .httpBasic(Customizer.withDefaults())

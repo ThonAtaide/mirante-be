@@ -8,7 +8,6 @@ fun ChampionshipDto.toChampionshipVo() = ChampionshipVo(
     name,
     organizedBy,
     season,
-    matches = matches?.map { it.toMatchVo() }?.toMutableList(),
     createdAt,
     updatedAt
 )
@@ -18,7 +17,6 @@ fun ChampionshipVo.toChampionshipDto() = ChampionshipDto(
     name!!,
     organizedBy!!,
     season!!,
-    matches = matches?.map { match -> match.toMatchDto() }?.toMutableList(),
     createdAt,
     updatedAt
 )

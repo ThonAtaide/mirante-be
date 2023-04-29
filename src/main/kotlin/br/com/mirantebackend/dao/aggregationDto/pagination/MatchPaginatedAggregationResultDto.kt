@@ -1,5 +1,5 @@
 package br.com.mirantebackend.dao.aggregationDto.pagination
 
-import br.com.mirantebackend.dao.aggregationDto.ChampionshipReducedDto
+import br.com.mirantebackend.model.documents.MatchDocument
 
-class MatchPaginatedAggregationResultDto : AbstractPaginatedAggregationResultDto<ChampionshipReducedDto>()
+class MatchPaginatedAggregationResultDto : AbstractPaginatedAggregationResultDto<MatchDocument>()

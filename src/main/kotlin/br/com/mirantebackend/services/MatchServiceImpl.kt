@@ -10,6 +10,8 @@ import br.com.mirantebackend.mapper.toMatchDocument
 import br.com.mirantebackend.mapper.toMatchDto
 import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.pageable.PageDto
+import br.com.mirantebackend.repository.ChampionshipDocumentRepository
+import br.com.mirantebackend.repository.MatchDocumentRepository
 import br.com.mirantebackend.services.interfaces.MatchService
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -17,7 +19,8 @@ import java.time.LocalDateTime
 
 @Service
 class MatchServiceImpl(
-    private val championshipDao: ChampionshipDao,
+    private val matchDocumentRepository: MatchDocumentRepository,
+    private val championshipDocumentRepository: ChampionshipDocumentRepository,
     private val matchDao: MatchDao
 ) : MatchService {
 
@@ -28,8 +31,8 @@ class MatchServiceImpl(
     override fun createMatch(championshipId: String, matchDto: MatchDto): MatchDto {
         logger.info { "Creating new match $matchDto on championship $championshipId" }
         try {
-            return championshipDao.findById(championshipId)
-                .map { matchDao.save(championshipId, matchDto.toMatchDocument()) }
+            return championshipDocumentRepository.findById(championshipId)
+                .map { championship -> matchDocumentRepository.save(matchDto.toMatchDocument(championship)) }
                 .orElseThrow { ChampionshipNotFoundException(championshipId) }
                 .toMatchDto()
         } catch (err: ChampionshipNotFoundException) {
@@ -44,12 +47,10 @@ class MatchServiceImpl(
     override fun updateMatch(championshipId: String, matchId: String, matchDto: MatchDto): MatchDto {
         logger.info { "Updating match $matchDto on championship $championshipId" }
         try {
-            return matchDao.findById(championshipId, matchId)
+            return matchDocumentRepository.findByIdAndChampionship(matchId, championshipId)
                 .map {
-                    matchDao.update(
-                        championshipId,
-                        matchId,
-                        matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument()
+                    matchDocumentRepository.save(
+                        matchDto.copy(id = matchId, createdAt = it.createdAt).toMatchDocument(it.championship)
                     )
                 }
                 .orElseThrow { MatchNotFoundException(matchId, championshipId) }
@@ -64,7 +65,7 @@ class MatchServiceImpl(
     }
 
     override fun findById(championshipId: String, matchId: String): MatchDto =
-        matchDao.findById(championshipId, matchId)
+        matchDocumentRepository.findByIdAndChampionship(matchId, championshipId)
             .orElseThrow { MatchNotFoundException(matchId, championshipId) }
             .toMatchDto()
 

@@ -24,9 +24,6 @@ data class ChampionshipDocument(
     @Field("season")
     var season: String,
 
-    @Field("matches")
-    var matches: MutableList<MatchDocument>? = null,
-
     @Field("created_at")
     @CreatedDate
     val createdAt: LocalDateTime? = null,

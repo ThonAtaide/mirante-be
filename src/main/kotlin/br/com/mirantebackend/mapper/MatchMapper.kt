@@ -1,5 +1,6 @@
 package br.com.mirantebackend.mapper
 
+import br.com.mirantebackend.model.documents.ChampionshipDocument
 import br.com.mirantebackend.model.documents.MatchDocument
 import br.com.mirantebackend.model.documents.TeamDocument
 import br.com.mirantebackend.model.dto.matches.MatchDto
@@ -7,7 +8,7 @@ import br.com.mirantebackend.model.dto.matches.TeamDto
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-fun MatchDto.toMatchDocument() = MatchDocument(
+fun MatchDto.toMatchDocument(championshipDocument: ChampionshipDocument) = MatchDocument(
     id,
     field,
     playedAt,
@@ -15,7 +16,8 @@ fun MatchDto.toMatchDocument() = MatchDocument(
     challenger = challenger?.toTeamDocument(),
     createdAt,
     updatedAt = LocalDateTime.now(ZoneOffset.UTC),
-    matchEnded = matchEnded
+    matchEnded = matchEnded,
+    championship = championshipDocument
 )
 
 fun TeamDto.toTeamDocument() = TeamDocument(
@@ -31,14 +33,9 @@ fun MatchDocument.toMatchDto() = MatchDto(
     createdAt = createdAt,
     updatedAt = updatedAt,
     matchEnded = matchEnded,
-    championship = championship?.toChampionshipInfoDto()
+    championship = championship.toChampionshipDto()
 )
 
 fun TeamDocument.toTeamDto() = TeamDto(
     name, score
-)
-
-fun MatchDocument.ChampionshipInfo.toChampionshipInfoDto() = MatchDto.ChampionshipInfoDto(
-    id = id,
-    name = name
 )

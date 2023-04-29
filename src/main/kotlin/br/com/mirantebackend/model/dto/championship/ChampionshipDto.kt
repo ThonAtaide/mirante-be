@@ -1,6 +1,5 @@
 package br.com.mirantebackend.model.dto.championship
 
-import br.com.mirantebackend.model.dto.matches.MatchDto
 import br.com.mirantebackend.model.dto.pageable.RecordDto
 import java.time.LocalDateTime
 import javax.validation.constraints.NotEmpty
@@ -21,8 +20,6 @@ data class ChampionshipDto(
     @field:NotNull(message = "É preciso informar a temporada.")
     @field:NotEmpty(message = "É preciso informar a temporada.")
     var season: String,
-
-    var matches: MutableList<MatchDto>? = null,
 
     val createdAt: LocalDateTime? = null,
 

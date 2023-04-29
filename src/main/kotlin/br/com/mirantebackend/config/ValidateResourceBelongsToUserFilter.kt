@@ -1,10 +1,12 @@
 package br.com.mirantebackend.config
 
 import org.springframework.security.core.context.SecurityContextHolder
+import java.net.http.HttpRequest
 import javax.servlet.Filter
 import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
+import javax.servlet.http.HttpServletRequest
 
 class ValidateResourceBelongsToUserFilter: Filter {
 
@@ -13,11 +15,12 @@ class ValidateResourceBelongsToUserFilter: Filter {
         response: ServletResponse,
         chain: FilterChain
     ) {
+        val httpServletRequest = request as HttpServletRequest
         SecurityContextHolder.getContext().authentication?.let { authentication ->
             val username = authentication.name
             println("Acessing user name: $username")
-            chain.doFilter(request, response)
-            //todo validar se o recurso pertence ao usuário ou pode ser alterado por ele
+
+            //todo adicionar username no header
         }
         chain.doFilter(request, response)
     }

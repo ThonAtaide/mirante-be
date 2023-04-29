@@ -16,7 +16,7 @@ fun MatchDto.toMatchVo() = MatchVo(
     matchEnded,
     createdAt = createdAt,
     updatedAt = LocalDateTime.now(ZoneOffset.UTC),
-    championship = championship?.toChampionshipInfoVo()
+    championship = championship?.toChampionshipVo()
 )
 
 fun TeamDto.toTeamVo() = TeamVo(
@@ -32,19 +32,9 @@ fun MatchVo.toMatchDto() = MatchDto(
     createdAt = createdAt,
     updatedAt = updatedAt,
     matchEnded = matchEnded,
-    championship = championship?.toChampionshipInfoDto()
+    championship = championship?.toChampionshipDto()
 )
 
 fun TeamVo.toTeamDto() = TeamDto(
     name, score
-)
-
-fun MatchDto.ChampionshipInfoDto.toChampionshipInfoVo() = MatchVo.ChampionshipInfoVo(
-    id = id,
-    name = name
-)
-
-fun MatchVo.ChampionshipInfoVo.toChampionshipInfoDto() = MatchDto.ChampionshipInfoDto(
-    id = id,
-    name = name
 )
