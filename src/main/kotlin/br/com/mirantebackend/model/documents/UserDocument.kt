@@ -3,6 +3,7 @@ package br.com.mirantebackend.model.documents
 import br.com.mirantebackend.model.enums.UserRolesEnum
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
@@ -16,9 +17,11 @@ data class UserDocument(
     @Field("name")
     var name: String,
 
+    @Indexed(unique = true)
     @Field("username")
     var username: String,
 
+    @Indexed(unique = true)
     @Field("email")
     var email: String,
 

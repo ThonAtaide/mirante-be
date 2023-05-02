@@ -35,10 +35,10 @@ class AuthServiceImpl(
     }
 
     override fun createCommonUser(createUserDto: CreateUserDto): String {
-        createUserDto.toUserDocument()
+        return createUserDto.toUserDocument()
             .also { it.password = bCryptPasswordEncoder.encode(createUserDto.password) }
             .let { userDocumentRepository.save(it) }
-        TODO("Not yet implemented")
+            .let { this.login(UserCredentialsDto(createUserDto.username, createUserDto.password)) }
     }
 
     override fun recoverAccess(emailRecovery: String): String {
