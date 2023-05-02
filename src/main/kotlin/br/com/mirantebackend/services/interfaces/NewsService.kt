@@ -7,9 +7,13 @@ import org.springframework.web.multipart.MultipartFile
 
 interface NewsService {
 
-    fun createNews(news: NewsRequestDto, createdBy: String, image: MultipartFile): NewsDto
+    fun createNews(news: NewsRequestDto, image: MultipartFile): NewsDto
 
-    fun updateNews(newsId: String, news: NewsRequestDto, image: MultipartFile? = null): NewsDto
+    fun updateNews(
+        newsId: String,
+        news: NewsRequestDto,
+        image: MultipartFile? = null
+    ): NewsDto
 
     fun getNews(newsId: String): NewsDto
 

@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class UserDetailsDto(
     private val id: String?,
 
-    private val nickname: String,
+    private val name: String,
 
     private val username: String,
 

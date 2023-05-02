@@ -3,24 +3,17 @@ package br.com.mirantebackend.model.dto.matches
 import br.com.mirantebackend.model.dto.championship.ChampionshipDto
 import br.com.mirantebackend.model.dto.pageable.RecordDto
 import java.time.LocalDateTime
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 data class MatchDto(
     var id: String?,
 
-    @field:NotNull(message = "É preciso informar o campo.")
-    @field:NotEmpty(message = "É preciso informar o campo.")
-    var field: String? = null,
+    var field: String,
 
-    @field:NotNull(message = "É preciso informar a data e horário do jogo.")
-    var playedAt: LocalDateTime? = null,
+    var playedAt: LocalDateTime,
 
-    @field:NotNull(message = "É preciso informar o time mandante.")
-    var principal: TeamDto? = null,
+    var principal: TeamDto,
 
-    @field:NotNull(message = "É preciso informar o time desafiante.")
-    var challenger: TeamDto? = null,
+    var challenger: TeamDto,
 
     var matchEnded: Boolean = false,
 

@@ -28,7 +28,10 @@ interface NewsController {
             MediaType.MULTIPART_FORM_DATA_VALUE
         ]
     )
-    fun createNews(@Validated @ModelAttribute news: NewsRequestVo, @ModelAttribute image: MultipartFile): NewsVo
+    fun createNews(
+        @Validated @ModelAttribute news: NewsRequestVo,
+        @ModelAttribute() image: MultipartFile
+    ): NewsVo
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(

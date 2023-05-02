@@ -7,7 +7,8 @@ fun NewsDocument.toNewsDto() = NewsDto(
     id,
     title,
     text,
-    createdBy,
+    createdBy = createdBy?.name!!,
+    updatedBy = updatedBy?.name!!,
     createdAt!!,
     updatedAt!!,
     imagePath

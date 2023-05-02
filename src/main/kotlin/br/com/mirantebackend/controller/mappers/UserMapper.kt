@@ -9,7 +9,7 @@ import br.com.mirantebackend.model.enums.UserRolesEnum
 
 fun CreateUserVo.toCreateUserDto() = CreateUserDto(
     username!!,
-    nickname!!,
+    name!!,
     email!!,
     password!!
 )
@@ -21,7 +21,7 @@ fun UserCredentialsVo.toUserCredentialsDto() = UserCredentialsDto(
 
 fun CreateUserDto.toUserDocument() = UserDocument(
     username = username,
-    nickname = nickname,
+    name = name,
     email = email,
     password = password,
     userRole = UserRolesEnum.ROLE_COMMON_USER

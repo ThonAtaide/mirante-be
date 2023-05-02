@@ -1,6 +1,6 @@
 package br.com.mirantebackend.config
 
-import br.com.mirantebackend.filters.ValidateResourceBelongsToUserFilter
+import br.com.mirantebackend.filters.HeaderAppenderFilter
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
@@ -67,14 +67,15 @@ class SecurityConfig(
             .antMatchers("/auth/**").permitAll()
             .antMatchers(HttpMethod.GET, "/championship/**").permitAll()
             .antMatchers(HttpMethod.GET, "/match/**").permitAll()
-            .antMatchers(HttpMethod.PUT, "/championship/**").hasRole("ADMIN")
-            .antMatchers(HttpMethod.POST, "/championship/**").hasRole("ADMIN")
-            .antMatchers(HttpMethod.DELETE, "/championship/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.GET, "/news/**").permitAll()
+            .antMatchers(HttpMethod.PUT, "/championship/**", "/match/**", "/news/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.POST, "/championship/**", "/match/**", "/news/**").hasRole("ADMIN")
+            .antMatchers(HttpMethod.DELETE, "/championship/**", "/match/**", "/news/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             .and()
             .httpBasic(Customizer.withDefaults())
             .oauth2ResourceServer(OAuth2ResourceServerConfigurer<*>::jwt)
-        httpSecurity.addFilterAfter(ValidateResourceBelongsToUserFilter(), BearerTokenAuthenticationFilter::class.java)
+        httpSecurity.addFilterAfter(HeaderAppenderFilter(), BearerTokenAuthenticationFilter::class.java)
 
         return httpSecurity.build()
     }

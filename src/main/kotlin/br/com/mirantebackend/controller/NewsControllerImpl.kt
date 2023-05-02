@@ -16,12 +16,19 @@ class NewsControllerImpl(
     private val newsService: NewsService
 ) : NewsController {
 
-    override fun createNews(news: NewsRequestVo, image: MultipartFile): NewsVo =
+    override fun createNews(
+        news: NewsRequestVo,
+        image: MultipartFile
+    ): NewsVo =
         news.toNewsRequestDto()
-            .let { newsService.createNews(it, "Tester", image) }
+            .let { newsService.createNews(it, image) }
             .toNewsVo()
 
-    override fun updateNews(newsId: String, news: NewsRequestVo, image: MultipartFile?): NewsVo =
+    override fun updateNews(
+        newsId: String,
+        news: NewsRequestVo,
+        image: MultipartFile?
+    ): NewsVo =
         news.toNewsRequestDto()
             .let { newsService.updateNews(newsId, it, image) }
             .toNewsVo()

@@ -6,30 +6,23 @@ import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.mongodb.core.mapping.DocumentReference
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 @NoArgsConstructor
 data class MatchDocument(
 
     val id: String? = null,
 
-    @field:NotNull(message = "É preciso informar o campo.")
-    @field:NotEmpty(message = "É preciso informar o campo.")
     @Field("field")
-    var field: String? = null,
+    var field: String,
 
-    @field:NotNull(message = "É preciso informar a data e horário do jogo.")
     @Field("played_at")
-    var playedAt: LocalDateTime? = null,
+    var playedAt: LocalDateTime,
 
-    @field:NotNull(message = "É preciso informar o time mandante.")
     @Field("principal")
-    var principal: TeamDocument? = null,
+    var principal: TeamDocument,
 
-    @field:NotNull(message = "É preciso informar o time desafiante.")
     @Field("challenger")
-    var challenger: TeamDocument? = null,
+    var challenger: TeamDocument,
 
     @CreatedDate
     @Field("created_at")

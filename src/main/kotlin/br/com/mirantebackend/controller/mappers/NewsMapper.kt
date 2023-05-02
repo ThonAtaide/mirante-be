@@ -16,6 +16,7 @@ fun NewsDto.toNewsVo() = NewsVo(
     title,
     text,
     createdBy,
+    updatedBy,
     createdAt,
     updatedAt,
     imagePath

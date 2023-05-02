@@ -11,8 +11,8 @@ fun MatchDto.toMatchVo() = MatchVo(
     id,
     field,
     playedAt,
-    principal = principal?.toTeamVo(),
-    challenger = challenger?.toTeamVo(),
+    principal = principal.toTeamVo(),
+    challenger = challenger.toTeamVo(),
     matchEnded,
     createdAt = createdAt,
     updatedAt = LocalDateTime.now(ZoneOffset.UTC),
@@ -25,10 +25,10 @@ fun TeamDto.toTeamVo() = TeamVo(
 
 fun MatchVo.toMatchDto() = MatchDto(
     id,
-    field,
-    playedAt,
-    principal = principal?.toTeamDto(),
-    challenger = challenger?.toTeamDto(),
+    field!!,
+    playedAt!!,
+    principal = principal?.toTeamDto()!!,
+    challenger = challenger?.toTeamDto()!!,
     createdAt = createdAt,
     updatedAt = updatedAt,
     matchEnded = matchEnded,
@@ -36,5 +36,6 @@ fun MatchVo.toMatchDto() = MatchDto(
 )
 
 fun TeamVo.toTeamDto() = TeamDto(
-    name, score
+    name!!,
+    score
 )

@@ -11,9 +11,9 @@ data class CreateUserVo(
     @field:NotEmpty(message = "É preciso informar um username")
     val username: String? = null,
 
-    @field:NotNull(message = "É preciso informar um apelido")
-    @field:NotEmpty(message = "É preciso informar um apelido")
-    val nickname: String? = null,
+    @field:NotNull(message = "É preciso informar um nome")
+    @field:NotEmpty(message = "É preciso informar um nome")
+    val name: String? = null,
 
     @field:NotNull(message = "É preciso informar um e-mail")
     @field:NotEmpty(message = "É preciso informar um e-mail")

@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import org.springframework.core.io.Resource
 import org.springframework.core.io.UrlResource
 import org.springframework.stereotype.Service
+import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
 import java.io.FileNotFoundException
 import java.nio.file.Files
@@ -37,7 +38,8 @@ class FileStorageServiceImpl : FileStorageService {
         try {
             logger.info { "uploading file ${file.originalFilename} to ${uploadsFolderPath.fileName} folder" }
 
-            val uploadedTargetFilePath = uploadsFolderPath.resolve(UUID.randomUUID().toString())
+            val filenameExtension = StringUtils.getFilenameExtension(file.originalFilename)
+            val uploadedTargetFilePath = uploadsFolderPath.resolve(UUID.randomUUID().toString() + "." + filenameExtension)
             Files.copy(file.inputStream, uploadedTargetFilePath)
             uploadedTargetFilePath.isRegularFile()
             return uploadedTargetFilePath.pathString

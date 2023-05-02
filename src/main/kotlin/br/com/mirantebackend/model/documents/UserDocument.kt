@@ -7,14 +7,14 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.Field
 import java.time.LocalDateTime
 
-@Document("user_document")
+@Document("coll_user_document")
 data class UserDocument(
 
     @Id
     var id: String? = null,
 
-    @Field("nickname")
-    var nickname: String,
+    @Field("name")
+    var name: String,
 
     @Field("username")
     var username: String,

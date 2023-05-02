@@ -13,6 +13,8 @@ data class NewsVo(
 
     var createdBy: String?,
 
+    val updatedBy: String?,
+
     var createdAt: LocalDateTime? = null,
 
     var updatedAt: LocalDateTime? = null,

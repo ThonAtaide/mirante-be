@@ -19,7 +19,11 @@ data class NewsDto(
     @field:NotNull(message = "É preciso informar o autor da postagem.")
     @field:NotEmpty(message = "É preciso informar o autor da postagem.")
     var createdBy: String,
+
+    val updatedBy: String,
+
     var createdAt: LocalDateTime? = null,
+
     var updatedAt: LocalDateTime? = null,
 
     @field:NotNull(message = "É preciso informar o caminho da imagem da postagem.")
